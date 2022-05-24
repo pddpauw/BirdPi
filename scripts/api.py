@@ -33,7 +33,6 @@ def get_detections():
             detection["Sens"] = i["Sens"]
             detection["Overlap"] = i["Overlap"]
             detection["File_Name"] = i["File_Name"]
-            detection["Manual_ID"] = i["Manual_ID"]
             detections.append(detection)
 
     except:
@@ -209,7 +208,6 @@ def api_get_detections_by_sci_name(sci_name):
 #@app.route('/api/users/delete/<com_name>',  methods = ['DELETE'])
 #def api_delete_user(com_name):
 #    return jsonify(delete_user(com_name))
-
 
 if __name__ == "__main__":
     #app.debug = True
