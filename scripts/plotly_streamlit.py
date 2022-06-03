@@ -40,9 +40,8 @@ st.markdown("""
         """, unsafe_allow_html=True)
 
 
-
 @st.cache(hash_funcs={Connection: id})
-#@st.cache(allow_output_mutation=True)
+    #@st.cache(allow_output_mutation=True)
 def get_connection(path: str):
     return sqlite3.connect(path, check_same_thread=False)
 
@@ -52,11 +51,17 @@ def get_data(conn: Connection):
     return df1
 
 
-conn = get_connection(URI_SQLITE_DB)
-df = get_data(conn)
-df2 = df.copy()
-df2['DateTime'] = pd.to_datetime(df2['Date'] + " " + df2['Time'])
-df2 = df2.set_index('DateTime')
+def get_db():
+   
+
+    conn = get_connection(URI_SQLITE_DB)
+    df = get_data(conn)
+    df2 = df.copy()
+    df2['DateTime'] = pd.to_datetime(df2['Date'] + " " + df2['Time'])
+    df2 = df2.set_index('DateTime')
+    return df2
+
+df2 = get_db()
 
 daily = st.sidebar.checkbox('Single Day View', help= 'Select if you want single day view, unselect for multi-day views')
 
@@ -148,6 +153,17 @@ df5 = time_resample(df2, resample_time)
 
 # Create species count for selected date range
 
+def update_db():
+    # try: 
+    conn = get_connection(URI_SQLITE_DB)
+    cursor = conn.cursor()
+    cursor.execute(f''' UPDATE detections SET Manual_ID = "{corrected}" WHERE File_Name = "{recording}" ''')
+    conn.commit()
+    # con.close()
+
+
+
+
 Specie_Count = df5.value_counts()
 
 # Create Hourly Crosstab
@@ -178,7 +194,7 @@ if daily == False:
         index = 0)
 
 
-    # filt = df2['Com_Name'] == specie
+        # specie="Cape Robin-Chat"
         if specie == 'All':
             df_counts = int(hourly[hourly.index==specie]['All'])
             fig = make_subplots(
@@ -186,7 +202,7 @@ if daily == False:
                 specs=[[{"type": "xy", "rowspan": 3}, {"type": "polar", "rowspan": 2}], [{"rowspan": 1}, {"rowspan": 1}],
                     [None, {"type": "xy", "rowspan": 1}]],
                 subplot_titles=('<b>Top ' + str(top_N) + ' Species in Date Range ' + str(start_date) + ' to ' + str(
-                    end_date) + '<br>for ' + str(resample_sel) + ' sampling interval.' + '</b>',
+                    end_date) + ' for ' + str(resample_sel) + ' sampling interval.' + '</b>',
                                 'Total Detect:' + str('{:,}'.format(df_counts)) 
                                 # +   '   Confidence Max:' + str(
                                 #     '{:.2f}%'.format(max(df2[df2['Com_Name'] == specie]['Confidence']) * 100)) +
@@ -196,7 +212,7 @@ if daily == False:
             )
             fig.layout.annotations[1].update(x=0.7, y=0.25, font_size=15)
 
-            # Plot seen species for selected date range and number of species
+            # Plot verification species for selected date range and number of species
             
             fig.add_trace(go.Bar(y=top_N_species.index, x=top_N_species, orientation='h', marker_color='seagreen'), row=1, col=1)
             
@@ -305,38 +321,74 @@ if daily == False:
         
             with col2:
                 try:
-                    recording = st.selectbox('Available recordings', recordings.sort_index(ascending=False))
+                    recording = st.selectbox('Available recordings', recordings.sort_index(ascending=False))#) format_func=lambda x: print("\033[1,32, 40m x \n"))
                     date_specie = df2.loc[df2['File_Name']==recording,['Date','Com_Name']]
                     date_dir = date_specie['Date'].values[0]
                     specie_dir = date_specie['Com_Name'].values[0].replace(" ","_")
                     st.image(userDir + '/BirdSongs/Extracted/By_Date/'+ date_dir + '/'+ specie_dir + '/' + recording + '.png')
+                    # recording_file = userDir +'/BirdSongs/Extracted/By_Date/'+ date_dir + '/'+ specie_dir + '/' + recording
+                    # html_string = f""" <audio controls autoplay> <source src = " {recording_file}"> </audio> """
+                    # sound = st.empty()
+                    # sound.markdown(html_string, unsafe_allow_html= True)
+                    # print('xxx')
+                    # time.sleep(3)
+                    # print('yyy')
+                    
+                    
                     st.audio(userDir +'/BirdSongs/Extracted/By_Date/'+ date_dir + '/'+ specie_dir + '/' + recording)
                 except:
                     st.title('RECORDING NOT AVAILABLE :(')    
-            # try:
-            #     con = sqlite3.connect(userDir + '/BirdNET-Pi/scripts/birds.db')
-            #     cur = con.cursor()
+            
             cola, colb, colc, cold = st.columns((3,1,1,1))
             with colb:
-                seen = st.checkbox('Reviewed')
-            if seen:
+                manual_id_checked = (df2.loc[df2['File_Name']==recording]['Manual_ID']!='UNVERIFIED')[0]
+                verification = st.checkbox('Click to Review', value = manual_id_checked, disabled=manual_id_checked)
+            if verification:
                 with colc:
-                    verified = st.radio("Verification",['True Positive','False Positive'])
-            
+                    verified = st.radio("Verification",['True Positive','False Positive'])#, index = int(df2.loc[df2['File_Name']==recording]['ID_Class']))
                     if verified == "False Positive":
                         df_names = pd.read_csv(userDir+'/BirdNET-Pi/model/labels.txt', delimiter= '_', names=['Sci_Name', 'Com_Name']) 
                         df_unknown= pd.DataFrame({"Sci_Name":["UNKNOWN"],"Com_Name":["UNKNOWN"]})
-                        df_names = pd.concat([df_unknown,df_names], ignore_index=True)
+                        df_not_bird= pd.DataFrame({"Sci_Name":["Frog", "Insect", "Machine", "Vehicle", "Ambulance", "Telephone", "Baby"],"Com_Name":["Frog", "Insect", "Machine", "Vehicle", "Ambulance", "Telephone", "Baby"]})
+                        df_names = pd.concat([df_unknown, df_not_bird, df_names], ignore_index=True)
                         with cold:
-                            corrected = st.selectbox('What species?', df_names['Com_Name'])
-            #     cur.execute("UPDATE detections SET  Seen = seen WHERE File_Name = recording")
-            #     con.commit()
-            #     con.close()
-            
-            # except BaseException:
-            #     print("Database busy")
-            #     time.sleep(2)
-            
+                            corrected = st.selectbox('What specie?', df_names['Com_Name'])#, index= int(df_names[df_names['Com_Name']==df2[df2['File_Name']==recording]['Manual_ID'][0]].index[0]))
+                    else:
+                        corrected = df2.loc[df2['File_Name']==recording]['Com_Name'][0]
+                
+                db_ID = df2.loc[df2['File_Name']==recording]['Manual_ID'][0]
+                corrected_ID = corrected
+                
+                if db_ID == corrected_ID:
+                    pass            
+                else:
+                    col1, col2, col3, col4, col5, col6 = st.columns(6)
+                    with col1:
+                        pass
+                    with col2:
+                        pass
+                    with col3:
+                        pass
+                    with col4:
+                        pass
+                    with col5:
+                        pass
+                    with col6:
+                        placeholder = st.empty()
+                        isclick = placeholder.button('Commit to DB', on_click= update_db)
+                        if isclick:
+                            placeholder.empty()
+                        df2 = get_db()
+                        # conn = get_connection(URI_SQLITE_DB)
+                        # cursor = conn.cursor()
+                        # cursor.execute(f''' UPDATE detections SET Manual_ID = "{corrected}" WHERE File_Name = "{recording}" ''')
+                        # conn.commit()
+ 
+
+                            # except BaseException:
+                            #     print("ERRORRRR")
+                            #     time.sleep(2)
+                
             
     else:
 
