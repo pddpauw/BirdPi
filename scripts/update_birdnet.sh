@@ -11,7 +11,7 @@ my_dir=$HOME/BirdNET-Pi/scripts
 
 # Defaults
 remote="origin"
-branch="main"
+branch="ui_exclusions"
 
 while getopts ":r:b:" o; do
   case "${o}" in

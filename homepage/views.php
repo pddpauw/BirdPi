@@ -120,6 +120,7 @@ if(isset($_GET['view'])){
           <button type=\"submit\" name=\"view\" value=\"Webterm\" form=\"views\">Web Terminal</button>
           <button type=\"submit\" name=\"view\" value=\"Included\" form=\"views\">Custom Species List</button>
           <button type=\"submit\" name=\"view\" value=\"Excluded\" form=\"views\">Excluded Species List</button>
+          <button type=\"submit\" name=\"view\" value=\"UI_Excluded\" form=\"views\">Excluded Species List (UI Only)</button>
           </form>
           </div>";
       } else {
@@ -184,6 +185,31 @@ if(isset($_GET['view'])){
       file_put_contents("$file", "$str");
     }
     include('./scripts/exclude_list.php');
+  }
+  if($_GET['view'] == "UI_Excluded"){
+    if(isset($_GET['species']) && isset($_GET['add'])){
+      $file = './scripts/exclude_species_list_ui.txt';
+      $str = file_get_contents("$file");
+      $str = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $str);
+      file_put_contents("$file", "$str");
+      foreach ($_GET['species'] as $selectedOption)
+        file_put_contents("./scripts/exclude_species_list_ui.txt", $selectedOption."\n", FILE_APPEND);
+    } elseif (isset($_GET['species']) && isset($_GET['del'])){
+      $file = './scripts/exclude_species_list_ui.txt';
+      $str = file_get_contents("$file");
+      $str = preg_replace('/^\h*\v+/m', '', $str);
+      file_put_contents("$file", "$str");
+      foreach($_GET['species'] as $selectedOption) {
+        $content = file_get_contents("./scripts/exclude_species_list_ui.txt");
+        $newcontent = str_replace($selectedOption, "", "$content");
+        file_put_contents("./scripts/exclude_species_list_ui.txt", "$newcontent");
+      }
+      $file = './scripts/exclude_species_list_ui.txt';
+      $str = file_get_contents("$file");
+      $str = preg_replace('/^\h*\v+/m', '', $str);
+      file_put_contents("$file", "$str");
+    }
+    include('./scripts/exclude_list_ui.php');
   }
   if($_GET['view'] == "File"){
     echo "<iframe src='scripts/filemanager/filemanager.php'></iframe>";

@@ -101,6 +101,7 @@ create_necessary_dirs() {
   [ -d ${PROCESSED} ] || sudo -u ${USER} mkdir -p ${PROCESSED}
 
   sudo -u ${USER} ln -fs $my_dir/exclude_species_list.txt $my_dir/scripts
+  sudo -u ${USER} ln -fs $my_dir/exclude_species_list_ui.txt $my_dir/scripts
   sudo -u ${USER} ln -fs $my_dir/include_species_list.txt $my_dir/scripts
   sudo -u ${USER} ln -fs $my_dir/homepage/* ${EXTRACTED}
   sudo -u ${USER} ln -fs $my_dir/model/labels.txt ${my_dir}/scripts

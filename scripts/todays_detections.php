@@ -5,13 +5,32 @@ session_start();
 error_reporting(0);
 ini_set('display_errors', 0);
 
+$lines = file('./scripts/exclude_species_list_ui.txt', FILE_IGNORE_NEW_LINES);
+$i =0;
+if(count($lines) > 0) {
+  $exclude_ui_string = " WHERE Sci_Name != ";
+} else {
+  $exclude_ui_string = "";
+}
+foreach($lines as $line) {
+  if($i < count($lines))
+  {
+    $exclude_ui_string .= '"'.explode("_", $line)[0].'"';
+    if($i != count($lines)-1) {
+      $exclude_ui_string .= " AND Sci_Name != ";
+    }
+  }
+  $i++;
+}
+$exclude_ui_string_and = str_replace("WHERE", "AND", $exclude_ui_string);
+
 $db = new SQLite3('./scripts/birds.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 if($db == False){
   echo "Database is busy";
   header("refresh: 0;");
 }
 
-$statement1 = $db->prepare('SELECT COUNT(*) FROM detections');
+$statement1 = $db->prepare('SELECT COUNT(*) FROM detections '.$exclude_ui_string.'');
 if($statement1 == False){
   echo "Database is busy";
   header("refresh: 0;");
@@ -19,7 +38,7 @@ if($statement1 == False){
 $result1 = $statement1->execute();
 $totalcount = $result1->fetchArray(SQLITE3_ASSOC);
 
-$statement2 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == DATE(\'now\', \'localtime\')');
+$statement2 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == DATE(\'now\', \'localtime\') '.$exclude_ui_string_and.'');
 if($statement2 == False){
   echo "Database is busy";
   header("refresh: 0;");
@@ -27,7 +46,7 @@ if($statement2 == False){
 $result2 = $statement2->execute();
 $todaycount = $result2->fetchArray(SQLITE3_ASSOC);
 
-$statement3 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == Date(\'now\', \'localtime\') AND TIME >= TIME(\'now\', \'localtime\', \'-1 hour\')');
+$statement3 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == Date(\'now\', \'localtime\') AND TIME >= TIME(\'now\', \'localtime\', \'-1 hour\') '.$exclude_ui_string_and.'');
 if($statement3 == False){
   echo "Database is busy";
   header("refresh: 0;");
@@ -35,7 +54,7 @@ if($statement3 == False){
 $result3 = $statement3->execute();
 $hourcount = $result3->fetchArray(SQLITE3_ASSOC);
 
-$statement4 = $db->prepare('SELECT Com_Name, Sci_Name, Time, Confidence FROM detections LIMIT 1');
+$statement4 = $db->prepare('SELECT Com_Name, Sci_Name, Time, Confidence FROM detections '.$exclude_ui_string.' LIMIT 1');
 if($statement4 == False){
   echo "Database is busy";
   header("refresh: 0;");
@@ -43,7 +62,7 @@ if($statement4 == False){
 $result4 = $statement4->execute();
 $mostrecent = $result4->fetchArray(SQLITE3_ASSOC);
 
-$statement5 = $db->prepare('SELECT COUNT(DISTINCT(Com_Name)) FROM detections WHERE Date == Date(\'now\', \'localtime\')');
+$statement5 = $db->prepare('SELECT COUNT(DISTINCT(Com_Name)) FROM detections WHERE Date == Date(\'now\', \'localtime\') '.$exclude_ui_string_and.'');
 if($statement5 == False){
   echo "Database is busy";
   header("refresh: 0;");
@@ -51,7 +70,7 @@ if($statement5 == False){
 $result5 = $statement5->execute();
 $todayspeciestally = $result5->fetchArray(SQLITE3_ASSOC);
 
-$statement6 = $db->prepare('SELECT COUNT(DISTINCT(Com_Name)) FROM detections');
+$statement6 = $db->prepare('SELECT COUNT(DISTINCT(Com_Name)) FROM detections '.$exclude_ui_string.'');
 if($statement6 == False){
   echo "Database is busy";
   header("refresh: 0;");
@@ -79,13 +98,13 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true"  ) {
     $searchquery = "";
   }
   if(isset($_GET['display_limit']) && is_numeric($_GET['display_limit'])){
-    $statement0 = $db->prepare('SELECT Time, Com_Name, Sci_Name, Confidence, File_Name FROM detections WHERE Date == Date(\'now\', \'localtime\') '.$searchquery.' ORDER BY Time DESC LIMIT '.(intval($_GET['display_limit'])-40).',40');
+    $statement0 = $db->prepare('SELECT Time, Com_Name, Sci_Name, Confidence, File_Name FROM detections WHERE Date == Date(\'now\', \'localtime\') '.$searchquery.' '.$exclude_ui_string_and.' ORDER BY Time DESC LIMIT '.(intval($_GET['display_limit'])-40).',40');
   } else {
     // legacy mode
     if(isset($_GET['hard_limit']) && is_numeric($_GET['hard_limit'])) {
-      $statement0 = $db->prepare('SELECT Time, Com_Name, Sci_Name, Confidence, File_Name FROM detections WHERE Date == Date(\'now\', \'localtime\') '.$searchquery.' ORDER BY Time DESC LIMIT '.$_GET['hard_limit']);
+      $statement0 = $db->prepare('SELECT Time, Com_Name, Sci_Name, Confidence, File_Name FROM detections WHERE Date == Date(\'now\', \'localtime\') '.$searchquery.' '.$exclude_ui_string_and.' ORDER BY Time DESC LIMIT '.$_GET['hard_limit']);
     } else {
-      $statement0 = $db->prepare('SELECT Time, Com_Name, Sci_Name, Confidence, File_Name FROM detections WHERE Date == Date(\'now\', \'localtime\') '.$searchquery.' ORDER BY Time DESC');
+      $statement0 = $db->prepare('SELECT Time, Com_Name, Sci_Name, Confidence, File_Name FROM detections  WHERE Date == Date(\'now\', \'localtime\') '.$searchquery.' '.$exclude_ui_string_and.' ORDER BY Time DESC');
     }
     
   }

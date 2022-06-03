@@ -30,6 +30,27 @@ if(isset($_GET['fetch_chart_string']) && $_GET['fetch_chart_string'] == "true") 
   die();
 }
 
+$exclude_ui_string = " WHERE Sci_Name != ";
+$eachline = file($filename, FILE_IGNORE_NEW_LINES);
+foreach($eachline as $lines){
+  $exclude_ui_string += "Sci_Name != ".explode("_", $lines)[0]. " AND";
+}
+
+$lines = file('./scripts/exclude_species_list_ui.txt', FILE_IGNORE_NEW_LINES);
+$i =0;
+foreach($lines as $line) {
+  if($i != 0 && $i < count($lines))
+  {
+    $exclude_ui_string .= '"'.explode("_", $lines)[0].'"';
+    if($i != count($lines)-1) {
+      $exclude_ui_string .= " AND Sci_Name != ";
+    }
+  }
+  $i++;
+}
+
+echo $exclude_ui_string;
+
 if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true" && isset($_GET['previous_detection_identifier'])) {
 
   $statement4 = $db->prepare('SELECT Com_Name, Sci_Name, Date, Time, Confidence, File_Name FROM detections ORDER BY Date DESC, Time DESC LIMIT 5');

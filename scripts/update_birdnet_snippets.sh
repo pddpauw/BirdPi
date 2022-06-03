@@ -81,5 +81,11 @@ if [ ! -f $HOME/BirdNET-Pi/model/labels.txt ];then
   && logger "[$0] Installed new language label file for '$DATABASE_LANG'";
 fi
 
+if [ ! -f $HOME/BirdNET-Pi/exclude_species_list_ui.txt ];then
+  sudo -u $USER ln -fs $HOME/BirdNET-Pi/exclude_species_list_ui.txt $HOME/BirdNET-Pi/scripts
+  touch $HOME/BirdNET-Pi/exclude_species_list_ui.txt && chmod g+rw $HOME/BirdNET-Pi/exclude_species_list_ui.txt;
+fi
+
+
 sudo systemctl daemon-reload
 restart_services.sh
