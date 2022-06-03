@@ -5,18 +5,18 @@ session_start();
 error_reporting(0);
 ini_set('display_errors', 0);
 
-$lines = file('./scripts/exclude_species_list_ui.txt', FILE_IGNORE_NEW_LINES);
+$lines_exc = file('./scripts/exclude_species_list_ui.txt', FILE_IGNORE_NEW_LINES);
 $i =0;
-if(count($lines) > 0) {
+if(count($lines_exc) > 0) {
   $exclude_ui_string = " WHERE Sci_Name != ";
 } else {
   $exclude_ui_string = "";
 }
-foreach($lines as $line) {
-  if($i < count($lines))
+foreach($lines_exc as $line) {
+  if($i < count($lines_exc))
   {
     $exclude_ui_string .= '"'.explode("_", $line)[0].'"';
-    if($i != count($lines)-1) {
+    if($i != count($lines_exc)-1) {
       $exclude_ui_string .= " AND Sci_Name != ";
     }
   }

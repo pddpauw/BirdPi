@@ -30,30 +30,28 @@ if(isset($_GET['fetch_chart_string']) && $_GET['fetch_chart_string'] == "true") 
   die();
 }
 
-$exclude_ui_string = " WHERE Sci_Name != ";
-$eachline = file($filename, FILE_IGNORE_NEW_LINES);
-foreach($eachline as $lines){
-  $exclude_ui_string += "Sci_Name != ".explode("_", $lines)[0]. " AND";
-}
-
-$lines = file('./scripts/exclude_species_list_ui.txt', FILE_IGNORE_NEW_LINES);
+$lines_exc = file('./scripts/exclude_species_list_ui.txt', FILE_IGNORE_NEW_LINES);
 $i =0;
-foreach($lines as $line) {
-  if($i != 0 && $i < count($lines))
+if(count($lines_exc) > 0) {
+  $exclude_ui_string = " WHERE Sci_Name != ";
+} else {
+  $exclude_ui_string = "";
+}
+foreach($lines_exc as $line) {
+  if($i < count($lines_exc))
   {
-    $exclude_ui_string .= '"'.explode("_", $lines)[0].'"';
-    if($i != count($lines)-1) {
+    $exclude_ui_string .= '"'.explode("_", $line)[0].'"';
+    if($i != count($lines_exc)-1) {
       $exclude_ui_string .= " AND Sci_Name != ";
     }
   }
   $i++;
 }
-
-echo $exclude_ui_string;
+$exclude_ui_string_and = str_replace("WHERE", "AND", $exclude_ui_string);
 
 if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true" && isset($_GET['previous_detection_identifier'])) {
 
-  $statement4 = $db->prepare('SELECT Com_Name, Sci_Name, Date, Time, Confidence, File_Name FROM detections ORDER BY Date DESC, Time DESC LIMIT 5');
+  $statement4 = $db->prepare('SELECT Com_Name, Sci_Name, Date, Time, Confidence, File_Name FROM detections '.$exclude_ui_string.' ORDER BY Date DESC, Time DESC LIMIT 5');
   if($statement4 == False) {
     echo "Database is busy";
     header("refresh: 0;");
@@ -157,7 +155,7 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true" && isse
 
 if(isset($_GET['ajax_left_chart']) && $_GET['ajax_left_chart'] == "true") {
 
-$statement = $db->prepare('SELECT COUNT(*) FROM detections');
+$statement = $db->prepare('SELECT COUNT(*) FROM detections '.$exclude_ui_string.'');
 if($statement == False) {
   echo "Database is busy";
   header("refresh: 0;");
@@ -165,7 +163,7 @@ if($statement == False) {
 $result = $statement->execute();
 $totalcount = $result->fetchArray(SQLITE3_ASSOC);
 
-$statement2 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == DATE(\'now\', \'localtime\')');
+$statement2 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == DATE(\'now\', \'localtime\') '.$exclude_ui_string_and.'');
 if($statement2 == False) {
   echo "Database is busy";
   header("refresh: 0;");
@@ -173,7 +171,7 @@ if($statement2 == False) {
 $result2 = $statement2->execute();
 $todaycount = $result2->fetchArray(SQLITE3_ASSOC);
 
-$statement3 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == Date(\'now\', \'localtime\') AND TIME >= TIME(\'now\', \'localtime\', \'-1 hour\')');
+$statement3 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == Date(\'now\', \'localtime\') AND TIME >= TIME(\'now\', \'localtime\', \'-1 hour\') '.$exclude_ui_string_and.'');
 if($statement3 == False) {
   echo "Database is busy";
   header("refresh: 0;");
@@ -181,7 +179,7 @@ if($statement3 == False) {
 $result3 = $statement3->execute();
 $hourcount = $result3->fetchArray(SQLITE3_ASSOC);
 
-$statement5 = $db->prepare('SELECT COUNT(DISTINCT(Com_Name)) FROM detections WHERE Date == Date(\'now\',\'localtime\')');
+$statement5 = $db->prepare('SELECT COUNT(DISTINCT(Com_Name)) FROM detections WHERE Date == Date(\'now\',\'localtime\') '.$exclude_ui_string_and.'');
 if($statement5 == False) {
   echo "Database is busy";
   header("refresh: 0;");
@@ -189,7 +187,7 @@ if($statement5 == False) {
 $result5 = $statement5->execute();
 $speciestally = $result5->fetchArray(SQLITE3_ASSOC);
 
-$statement6 = $db->prepare('SELECT COUNT(DISTINCT(Com_Name)) FROM detections');
+$statement6 = $db->prepare('SELECT COUNT(DISTINCT(Com_Name)) FROM detections '.$exclude_ui_string.'');
 if($statement6 == False) {
   echo "Database is busy";
   header("refresh: 0;");
