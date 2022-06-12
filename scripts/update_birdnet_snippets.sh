@@ -86,7 +86,7 @@ if ! grep FLICKR_FILTER_EMAIL /etc/birdnet/birdnet.conf &>/dev/null;then
 fi
 
 set -x
-if ! sqlite $my_dir/birds.db 'SELECT COUNT(Manual_ID) FROM detections' &>/dev/null; then
+if ! sqlite3 $my_dir/birds.db 'SELECT COUNT(Manual_ID) FROM detections' &>/dev/null; then
   sqlite3 $my_dir/birds.db \
     'ALTER TABLE detections
      ADD COLUMN Manual_ID text NOT NULL DEFAULT "UNVERIFIED"'
