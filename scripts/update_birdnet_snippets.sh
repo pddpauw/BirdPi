@@ -85,5 +85,12 @@ if ! grep FLICKR_FILTER_EMAIL /etc/birdnet/birdnet.conf &>/dev/null;then
   sudo -u$USER echo "FLICKR_FILTER_EMAIL=" >> /etc/birdnet/birdnet.conf
 fi
 
+if ! sqlite $my_dir/birds.db 'SELECT COUNT(Manual_ID) FROM detections' &>/dev/null; then
+  sqlite3 $my_dir/birds.db \
+    'ALTER TABLE detections
+     ADD COLUMN IF NOT EXISTS Manual_ID
+     text NOT NULL DEFAULT "UNVERIFIED"'
+fi
+
 sudo systemctl daemon-reload
 restart_services.sh

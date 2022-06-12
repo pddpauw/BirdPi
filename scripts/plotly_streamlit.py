@@ -154,15 +154,14 @@ df5 = time_resample(df2, resample_time)
 # Create species count for selected date range
 
 def update_db():
-    # try: 
-    conn = get_connection(URI_SQLITE_DB)
-    cursor = conn.cursor()
-    cursor.execute(f''' UPDATE detections SET Manual_ID = "{corrected}" WHERE File_Name = "{recording}" ''')
-    conn.commit()
-    # con.close()
-
-
-
+    try: 
+        conn = get_connection(URI_SQLITE_DB)
+        cursor = conn.cursor()
+        cursor.execute(f''' UPDATE detections SET Manual_ID = "{corrected}" WHERE File_Name = "{recording}" ''')
+        conn.commit()
+        con.close()
+    except:
+        print('Can\'t alter database')
 
 Specie_Count = df5.value_counts()
 
