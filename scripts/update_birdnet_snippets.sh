@@ -88,8 +88,7 @@ fi
 if ! sqlite $my_dir/birds.db 'SELECT COUNT(Manual_ID) FROM detections' &>/dev/null; then
   sqlite3 $my_dir/birds.db \
     'ALTER TABLE detections
-     ADD COLUMN IF NOT EXISTS Manual_ID
-     text NOT NULL DEFAULT "UNVERIFIED"'
+     ADD COLUMN Manual_ID text NOT NULL DEFAULT "UNVERIFIED"'
 fi
 
 sudo systemctl daemon-reload
