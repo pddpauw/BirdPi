@@ -179,8 +179,8 @@ if(!isset($_GET['species']) && !isset($_GET['filename'])){
       </button>
       <button <?php if(isset($_GET['sort']) && $_GET['sort'] == "occurrences"){ echo "style='background:#9fe29b !important;'"; }?> class="sortbutton" type="submit" name="sort" value="occurrences">
          <img src="images/sort_occ.svg" title="Sort by occurrences" alt="Sort by occurrences">
-      </button>
-      <input <?php if(isset($_GET['onlyverified'])){ echo "checked"; }?> type="checkbox" name="onlyverified" onChange="submit()">
+      </button><br>
+      <input style="margin-top:10px" <?php if(isset($_GET['onlyverified'])){ echo "checked"; }?> type="checkbox" name="onlyverified" onChange="submit()">
       <label for="onlyverified">Manually Verified</label>
    </form>
 </div>
@@ -242,8 +242,8 @@ if(isset($_GET['species'])){ ?>
       </button>
       <button <?php if(isset($_GET['sort']) && $_GET['sort'] == "confidence"){ echo "style='background:#9fe29b !important;'"; }?> class="sortbutton" type="submit" name="sort" value="confidence">
          <img src="images/sort_occ.svg" title="Sort by confidence" alt="Sort by confidence">
-      </button>
-      <input <?php if(isset($_GET['onlyverified'])){ echo "checked"; }?> type="checkbox" name="onlyverified" onChange="submit()">
+      </button><br>
+      <input style="margin-top:10px" <?php if(isset($_GET['onlyverified'])){ echo "checked"; }?> type="checkbox" name="onlyverified" onChange="submit()">
       <label for="onlyverified">Manually Verified</label>
    </form>
 </div>
