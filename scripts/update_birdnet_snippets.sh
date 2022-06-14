@@ -93,8 +93,8 @@ fi
 
 astral_installation_status=$(~/BirdNET-Pi/birdnet/bin/python3 -c 'import pkgutil; print("installed" if pkgutil.find_loader("astral") else "not installed")')
 if [[ "$astral_installation_status" = "not installed" ]];then
-  ~/BirdNET-Pi/birdnet/bin/pip3 install -U pip
-  ~/BirdNET-Pi/birdnet/bin/pip3 install astral
+  sudo -u$USER $HOME/BirdNET-Pi/birdnet/bin/pip3 install -U pip
+  sudo -u$USER $HOME/BirdNET-Pi/birdnet/bin/pip3 install astral
 fi
 if ! sqlite3 $my_dir/birds.db 'SELECT COUNT(*) FROM daylight' &>/dev/null; then
   $HOME/BirdNET-Pi/birdnet/bin/python3 /usr/local/bin/sun.py
