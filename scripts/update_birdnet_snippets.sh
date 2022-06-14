@@ -92,7 +92,7 @@ if ! sqlite3 $my_dir/birds.db 'SELECT COUNT(Manual_ID) FROM detections' &>/dev/n
 fi
 
 if ! sqlite3 $my_dir/birds.db 'SELECT COUNT(*) FROM daylight' &>/dev/null; then
-  $HOME/BirdNET-Pi/birdnet/bin/python3 sun.py
+  $HOME/BirdNET-Pi/birdnet/bin/python3 /usr/local/bin/sun.py
 fi
 
 
