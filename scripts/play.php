@@ -61,8 +61,14 @@ if(isset($_GET['excludefile'])) {
   }
 }
 
+if(isset($_GET['onlyverified']))
+{
+  $sqladd = "AND Manual_ID != \"UNVERIFIED\"";
+  $sqladdw = "WHERE Manual_ID != \"UNVERIFIED\"";
+}
+
 if(isset($_GET['bydate'])){
-  $statement = $db->prepare('SELECT DISTINCT(Date) FROM detections GROUP BY Date ORDER BY Date DESC');
+  $statement = $db->prepare('SELECT DISTINCT(Date) FROM detections '.$sqladdw.' GROUP BY Date ORDER BY Date DESC');
   if($statement == False){
     echo "Database is busy";
     header("refresh: 0;");
@@ -76,9 +82,9 @@ if(isset($_GET['bydate'])){
   session_start();
   $_SESSION['date'] = $date;
   if(isset($_GET['sort']) && $_GET['sort'] == "occurrences") {
-    $statement = $db->prepare("SELECT DISTINCT(Com_Name) FROM detections WHERE Date == \"$date\" GROUP BY Com_Name ORDER BY COUNT(*) DESC");
+    $statement = $db->prepare("SELECT DISTINCT(Com_Name) FROM detections WHERE Date == \"$date\" ".$sqladd." GROUP BY Com_Name ORDER BY COUNT(*) DESC");
   } else {
-    $statement = $db->prepare("SELECT DISTINCT(Com_Name) FROM detections WHERE Date == \"$date\" ORDER BY Com_Name");
+    $statement = $db->prepare("SELECT DISTINCT(Com_Name) FROM detections WHERE Date == \"$date\" ".$sqladd." ORDER BY Com_Name");
   }
   if($statement == False){
     echo "Database is busy";
@@ -90,9 +96,9 @@ if(isset($_GET['bydate'])){
   #By Species
 } elseif(isset($_GET['byspecies'])) {
   if(isset($_GET['sort']) && $_GET['sort'] == "occurrences") {
-  $statement = $db->prepare('SELECT DISTINCT(Com_Name) FROM detections GROUP BY Com_Name ORDER BY COUNT(*) DESC');
+  $statement = $db->prepare('SELECT DISTINCT(Com_Name) FROM detections '.$sqladdw.' GROUP BY Com_Name ORDER BY COUNT(*) DESC');
   } else {
-    $statement = $db->prepare('SELECT DISTINCT(Com_Name) FROM detections ORDER BY Com_Name ASC');
+    $statement = $db->prepare('SELECT DISTINCT(Com_Name) FROM detections '.$sqladdw.' ORDER BY Com_Name ASC');
   } 
   session_start();
   if($statement == False){
@@ -107,8 +113,8 @@ if(isset($_GET['bydate'])){
   $species = $_GET['species'];
   session_start();
   $_SESSION['species'] = $species;
-  $statement = $db->prepare("SELECT * FROM detections WHERE Com_Name == \"$species\" ORDER BY Com_Name");
-  $statement3 = $db->prepare("SELECT Date, Time, Sci_Name, MAX(Confidence), File_Name FROM detections WHERE Com_Name == \"$species\" ORDER BY Com_Name");
+  $statement = $db->prepare("SELECT * FROM detections WHERE Com_Name == \"$species\" ".$sqladd." ORDER BY Com_Name");
+  $statement3 = $db->prepare("SELECT Date, Time, Sci_Name, MAX(Confidence), File_Name FROM detections WHERE Com_Name == \"$species\" ".$sqladd." ORDER BY Com_Name");
   if($statement == False || $statement3 == False){
     echo "Database is busy";
     header("refresh: 0;");
@@ -167,12 +173,15 @@ if(!isset($_GET['species']) && !isset($_GET['filename'])){
    <form action="" method="GET">
       <input type="hidden" name="view" value="Recordings">
       <input type="hidden" name="<?php echo $view; ?>" value="<?php echo $_GET['date']; ?>">
-      <button <?php if(!isset($_GET['sort']) || $_GET['sort'] == "alphabetical"){ echo "style='background:#9fe29b !important;'"; }?> class="sortbutton" type="submit" name="sort" value="alphabetical">
+      <input type="hidden" name="sort" value="<?php echo $_GET['sort']; ?>">
+      <button <?php if(!isset($_GET['sort']) || $_GET['sort'] == "" || $_GET['sort'] == "alphabetical"){ echo "style='background:#9fe29b !important;'"; }?> class="sortbutton" type="submit" name="sort" value="alphabetical">
          <img src="images/sort_abc.svg" title="Sort by alphabetical" alt="Sort by alphabetical">
       </button>
       <button <?php if(isset($_GET['sort']) && $_GET['sort'] == "occurrences"){ echo "style='background:#9fe29b !important;'"; }?> class="sortbutton" type="submit" name="sort" value="occurrences">
          <img src="images/sort_occ.svg" title="Sort by occurrences" alt="Sort by occurrences">
       </button>
+      <input <?php if(isset($_GET['onlyverified'])){ echo "checked"; }?> type="checkbox" name="onlyverified" onChange="submit()">
+      <label for="onlyverified">Manually Verified</label>
    </form>
 </div>
 <?php } ?>
@@ -227,12 +236,15 @@ if(isset($_GET['species'])){ ?>
    <form action="" method="GET">
       <input type="hidden" name="view" value="Recordings">
       <input type="hidden" name="species" value="<?php echo $_GET['species']; ?>">
-      <button <?php if(!isset($_GET['sort']) || $_GET['sort'] == "date"){ echo "style='background:#9fe29b !important;'"; }?> class="sortbutton" type="submit" name="sort" value="date">
+      <input type="hidden" name="sort" value="<?php echo $_GET['sort']; ?>">
+      <button <?php if(!isset($_GET['sort']) || $_GET['sort'] == "" || $_GET['sort'] == "date"){ echo "style='background:#9fe29b !important;'"; }?> class="sortbutton" type="submit" name="sort" value="date">
          <img width=35px src="images/sort_date.svg" title="Sort by date" alt="Sort by date">
       </button>
       <button <?php if(isset($_GET['sort']) && $_GET['sort'] == "confidence"){ echo "style='background:#9fe29b !important;'"; }?> class="sortbutton" type="submit" name="sort" value="confidence">
          <img src="images/sort_occ.svg" title="Sort by confidence" alt="Sort by confidence">
       </button>
+      <input <?php if(isset($_GET['onlyverified'])){ echo "checked"; }?> type="checkbox" name="onlyverified" onChange="submit()">
+      <label for="onlyverified">Manually Verified</label>
    </form>
 </div>
 <?php
@@ -243,18 +255,25 @@ if(isset($_GET['species'])){ ?>
   }
   
   $name = $_GET['species'];
+
+  if(isset($_GET['onlyverified']))
+  {
+  $sqladd = "AND Manual_ID != \"UNVERIFIED\"";
+  }
+
   if(isset($_SESSION['date'])) {
     $date = $_SESSION['date'];
+    
     if(isset($_GET['sort']) && $_GET['sort'] == "confidence") {
-        $statement2 = $db->prepare("SELECT * FROM detections where Com_Name == \"$name\" AND Date == \"$date\" ORDER BY Confidence DESC");
+        $statement2 = $db->prepare("SELECT * FROM detections where Com_Name == \"$name\" AND Date == \"$date\" ".$sqladd." ORDER BY Confidence DESC");
     } else {
-        $statement2 = $db->prepare("SELECT * FROM detections where Com_Name == \"$name\" AND Date == \"$date\" ORDER BY Time DESC");
+        $statement2 = $db->prepare("SELECT * FROM detections where Com_Name == \"$name\" AND Date == \"$date\" ".$sqladd." ORDER BY Time DESC");
     }
   } else {
       if(isset($_GET['sort']) && $_GET['sort'] == "confidence") {
-        $statement2 = $db->prepare("SELECT * FROM detections where Com_Name == \"$name\" ORDER BY Confidence DESC");
+        $statement2 = $db->prepare("SELECT * FROM detections where Com_Name == \"$name\" ".$sqladd." ORDER BY Confidence DESC");
     } else {
-       $statement2 = $db->prepare("SELECT * FROM detections where Com_Name == \"$name\" ORDER BY Date DESC, Time DESC");
+       $statement2 = $db->prepare("SELECT * FROM detections where Com_Name == \"$name\" ".$sqladd." ORDER BY Date DESC, Time DESC");
     }
   }
   if($statement2 == False){
