@@ -91,5 +91,10 @@ if ! sqlite3 $my_dir/birds.db 'SELECT COUNT(Manual_ID) FROM detections' &>/dev/n
      ADD COLUMN Manual_ID text NOT NULL DEFAULT "UNVERIFIED"'
 fi
 
+if ! sqlite3 $my_dir/birds.db 'SELECT COUNT(*) FROM daylight' &>/dev/null; then
+  $HOME/BirdNET-Pi/birdnet/bin/python3 sun.py
+fi
+
+
 sudo systemctl daemon-reload
 restart_services.sh
