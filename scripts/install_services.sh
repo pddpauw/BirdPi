@@ -93,6 +93,22 @@ EOF
   systemctl enable extraction.service
 }
 
+install_api() {
+  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_api.service
+[Unit]
+Description=BirdNET API
+[Service]
+Restart=on-failure
+RestartSec=3
+Type=simple
+User=birdie
+ExecStart=$PYTHON_VIRTUAL_ENV /usr/local/bin/api.py
+[Install]
+WantedBy=multi-user.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/birdnet_api.service /usr/lib/systemd/system
+}
+
 create_necessary_dirs() {
   echo "Creating necessary directories"
   [ -d ${EXTRACTED} ] || sudo -u ${USER} mkdir -p ${EXTRACTED}
