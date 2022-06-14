@@ -14,3 +14,5 @@ apprise
 paho-mqtt
 pytest==7.1.2
 pytest-mock==3.7.0
+Flask
+Flask-Cors
