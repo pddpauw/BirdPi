@@ -100,6 +100,10 @@ if ! sqlite3 $my_dir/birds.db 'SELECT COUNT(*) FROM daylight' &>/dev/null; then
   $HOME/BirdNET-Pi/birdnet/bin/python3 /usr/local/bin/sun.py
 fi
 
+source <(awk '/upload_max/ && !/^;/ {print $1$2$3}' /etc/php/*/fpm/php.ini)
+if [ "$upload_max_filesize" != "50M" ];then
+  sudo sed -i 's/upload_max_filesize =.*/upload_max_filesize = 50M/' /etc/php/*/fpm/php.ini
+fi
 
 sudo systemctl daemon-reload
 restart_services.sh
