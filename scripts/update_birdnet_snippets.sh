@@ -120,5 +120,21 @@ fi
 sudo sed -i 's|<!-- <bind-address>.*|<bind-address>127.0.0.1</bind-address>|;s|<!-- <shoutcast-mount>.*|<shoutcast-mount>/stream</shoutcast-mount>|' /etc/icecast2/icecast.xml
 sudo systemctl restart icecast2
 
+if ! [ -L /lib/systemd/system/birdnet_api.service ];then
+  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_api.service
+[Unit]
+Description=BirdNET API
+[Service]
+Restart=on-failure
+RestartSec=3
+Type=simple
+User=birdie
+ExecStart=$HOME/BirdNET-Pi/birdnet/bin/python3 /usr/local/bin/api.py
+[Install]
+WantedBy=multi-user.target
+EOF
+  sudo ln -sf $HOME/BirdNET-Pi/templates/birdnet_api.service /lib/systemd/system
+fi
+
 sudo systemctl daemon-reload
 restart_services.sh
