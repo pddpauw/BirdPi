@@ -17,6 +17,12 @@ $user = shell_exec("awk -F: '/1000/{print $1}' /etc/passwd");
 $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
 $home = trim($home);
 
+if(isset($_GET['manualid']) && isset($_GET['manualid']) == "true") {
+
+  //TODO: do something like UPDATE detections SET Manual_ID = $_GET['newid'] WHERE File_Name = $_GET['filename']
+  die("OK");
+}
+
 if(isset($_GET['excludefile'])) {
   if(isset($_SERVER['PHP_AUTH_USER'])) {
     $submittedpwd = $_SERVER['PHP_AUTH_PW'];
@@ -137,8 +143,39 @@ if(isset($_GET['bydate'])){
     </style>
   </head>
 
+<dialog id="attribution-dialog">
+  <p style="display:none" id="filename"></p>
+  <h1 id="modalHeading">Edit</h1>
+  <p id="modalText">Manual ID:</p> <input id="newmanualid">
+  <button onclick="submitID()">Submit</button>
+</dialog>
 <script>
-function toggleLock(filename, type, elem) {
+var dialog = document.querySelector('dialog');
+dialogPolyfill.registerDialog(dialog);
+
+function showDialog(filename,commonname) {
+  document.getElementById("modalHeading").innerHTML = "Edit \""+commonname+"\""
+  document.getElementById("filename").innerHTML = filename
+  document.getElementById('attribution-dialog').showModal();
+}
+
+function submitID() {
+  const xhttp = new XMLHttpRequest();
+  xhttp.onload = function() {
+    if(this.responseText == "OK"){
+      document.getElementById('attribution-dialog').close();
+      location.reload();
+    }
+  }
+  xhttp.open("GET", "play.php?manualid=true&filename="+document.getElementById("filename").innerHTML+"&newid="+document.getElementById("newmanualid").value, true);
+  xhttp.send();
+
+}
+
+</script>  
+
+<script>
+function toggleLock(filename) {
   const xhttp = new XMLHttpRequest();
   xhttp.onload = function() {
     if(this.responseText == "OK"){
@@ -317,7 +354,10 @@ if(isset($_GET['species'])){ ?>
         }
 
         echo "<tr>
-          <td class='relative'>$date $time<br>$confidence -- Manual ID: $manual_id<br><img style='cursor:pointer' onclick='toggleLock(\"".$filename_formatted."\",\"".$type."\", this)' class=\"copyimage\" width=25 title=\"".$title."\" src=\"".$imageicon."\">
+          <td class='relative'>$date $time<br>$confidence -- Manual ID: $manual_id<br><img style='cursor:pointer' onclick='toggleLock(\"".$filename_formatted."\",\"".$type."\", this)' class=\"copyimage\" width=25 title=\"".$title."\" src=\"".$imageicon."\"> 
+
+          <img style='cursor:pointer;right:45px;' onclick='showDialog(\"".$filename_formatted."\", \"".$results['Com_Name']."\")' class=\"copyimage\" width=25 title=\"".$title."\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Edit_icon_%28the_Noun_Project_30184%29.svg/1024px-Edit_icon_%28the_Noun_Project_30184%29.svg.png\">
+
           <a href=\"$filename\"><img src=\"$filename.png\"></a>
           </td>
           </tr>";
