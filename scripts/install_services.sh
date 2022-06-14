@@ -354,15 +354,19 @@ EOF
   systemctl enable web_terminal.service
 }
 
-configure_caddy_php() {
-  echo "Configuring PHP for Caddy"
-  sed -i 's/www-data/caddy/g' /etc/php/*/fpm/pool.d/www.conf
-  systemctl restart php7\*-fpm.service
+configure_caddy() {
   echo "Adding Caddy sudoers rule"
   cat << EOF > /etc/sudoers.d/010_caddy-nopasswd
 caddy ALL=(ALL) NOPASSWD: ALL
 EOF
   chmod 0440 /etc/sudoers.d/010_caddy-nopasswd
+}
+
+configure_php() {
+  echo "Configuring PHP for Caddy"
+  sed -i 's/www-data/caddy/g' /etc/php/*/fpm/pool.d/www.conf
+  sed -i 's/upload_max_filesize = .*/upload_max_filesize = 50M/' /etc/php/*/fpm/php.ini
+  systemctl restart php\*-fpm.service
 }
 
 install_phpsysinfo() {
@@ -434,7 +438,8 @@ install_services() {
 
   create_necessary_dirs
   generate_BirdDB
-  configure_caddy_php
+  configure_caddy
+  configure_php
   config_icecast
   USER=$USER HOME=$HOME ${my_dir}/scripts/createdb.sh
 }
