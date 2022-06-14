@@ -156,6 +156,7 @@ dialogPolyfill.registerDialog(dialog);
 function showDialog(filename,commonname) {
   document.getElementById("modalHeading").innerHTML = "Edit \""+commonname+"\""
   document.getElementById("filename").innerHTML = filename
+  document.getElementById("newmanualid").setAttribute("placeholder",commonname)
   document.getElementById('attribution-dialog').showModal();
 }
 
