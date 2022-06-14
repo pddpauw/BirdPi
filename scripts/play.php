@@ -290,6 +290,7 @@ if(isset($_GET['species'])){ ?>
     {
       $comname = preg_replace('/ /', '_', $results['Com_Name']);
       $comname = preg_replace('/\'/', '', $comname);
+      $manual_id = preg_replace('/\'/', '', $results['Manual_ID']);
       $date = $results['Date'];
       $filename = "/By_Date/".$date."/".$comname."/".$results['File_Name'];
       $sciname = preg_replace('/ /', '_', $results['Sci_Name']);
@@ -316,7 +317,7 @@ if(isset($_GET['species'])){ ?>
         }
 
         echo "<tr>
-          <td class='relative'>$date $time<br>$confidence<br><img style='cursor:pointer' onclick='toggleLock(\"".$filename_formatted."\",\"".$type."\", this)' class=\"copyimage\" width=25 title=\"".$title."\" src=\"".$imageicon."\">
+          <td class='relative'>$date $time<br>$confidence -- Manual ID: $manual_id<br><img style='cursor:pointer' onclick='toggleLock(\"".$filename_formatted."\",\"".$type."\", this)' class=\"copyimage\" width=25 title=\"".$title."\" src=\"".$imageicon."\">
           <a href=\"$filename\"><img src=\"$filename.png\"></a>
           </td>
           </tr>";
