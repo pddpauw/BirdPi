@@ -50,6 +50,22 @@ def get_data(conn: Connection):
     df1 = pd.read_sql("SELECT * FROM detections", con=conn)
     return df1
 
+def get_data2(conn: Connection):
+    df1 = pd.read_sql("SELECT * FROM daylight", con=conn)
+    return df1
+
+conn = get_connection(URI_SQLITE_DB)
+df = get_data(conn)
+df2 = df.copy()
+df2['DateTime'] = pd.to_datetime(df2['Date'] + " " + df2['Time'])
+df2 = df2.set_index('DateTime')
+
+df_daylight = get_data2(conn)
+df_daylight['sunr_min']=[(int(m.split(':')[0])*60 + int(m.split(':')[1])) for m in df_daylight['sunrise']]
+df_daylight['suns_min']=[(int(m.split(':')[0])*60 + int(m.split(':')[1])) for m in df_daylight['sunset']]
+df_daylight['dawn_min']=[(int(m.split(':')[0])*60 + int(m.split(':')[1])) for m in df_daylight['dawn']]
+df_daylight['dusk_min']=[(int(m.split(':')[0])*60 + int(m.split(':')[1])) for m in df_daylight['dusk']]
+        
 
 def get_db():
    
@@ -63,9 +79,9 @@ def get_db():
 
 df2 = get_db()
 
-daily = st.sidebar.checkbox('Single Day View', help= 'Select if you want single day view, unselect for multi-day views')
+daily_view = st.sidebar.checkbox('Single Day View', help= 'Select if you want single day view, unselect for multi-day views')
 
-if daily:
+if daily_view:
 # Date as slider
     Start_Date = pd.to_datetime(df2.index.min()).date()
     End_Date = pd.to_datetime(df2.index.max()).date()
@@ -83,7 +99,7 @@ else:
 
 #    cols1, cols2 = st.columns((1, 1))
     start_date, end_date = st.sidebar.slider('Date Range',
-                                    min_value = Start_Date-timedelta(days=1),
+                                    min_value = Start_Date- timedelta(days=1),
                                     max_value = End_Date,
                                     value=(Start_Date, End_Date),
                                     help= 'Select start and end date, if same date get a clockplot for a single day'                                        
@@ -114,30 +130,34 @@ st.write('<style>div.st-bf{flex-direction:column;} div.st-ag{font-weight:bold;pa
 
 # Select time period buttons
 # Disallow "Daily time period" for "Daily Chart"
-if start_date == end_date:
+
+report_type = st.sidebar.radio(
+    "Report Type Daily/Intra-Day",
+    ('Daily', 'Intra-Day'), index=1, help= 'Daily or Intra-Day?')
+
+if report_type == 'Daily':
+    resample_sel = st.sidebar.radio(
+        "Resample Resolution",
+        ('15 minutes', 'Hourly'), index=1, help= 'Select resolution for single day - larger times run faster' )
+
+    resample_times = {'15 minutes': '15min',
+                      'Hourly': '1H'
+                        }
+    resample_time = resample_times[resample_sel]
+else:
     resample_sel = st.sidebar.radio(
         "Resample Resolution",
         ('Raw', '15 minutes', 'Hourly'), index=1, help= 'Select resolution for single day - larger times run faster' )
 
-    resample_times = {'Raw': 'Raw',
-                      '1 minute': '1min',
-                      '15 minutes': '15min',
-                      'Hourly': '1H'
-                      }
-    resample_time = resample_times[resample_sel]
-
-else:
-    resample_sel = st.sidebar.radio(
-        "Resample Resolution",
-        ('Raw', '15 minutes', 'Hourly', 'DAILY'), index=1, help= 'Select resolution for species - DAILY provides time series')
 
     resample_times = {'Raw': 'Raw',
-                      '1 minute': '1min',
-                      '15 minutes': '15min',
-                      'Hourly': '1H',
-                      'DAILY': '1D'
-                      }
+                        '15 minutes': '15min',
+                        'Hourly': '1H'
+                        }
     resample_time = resample_times[resample_sel]
+
+
+
 
 @st.cache()
 def time_resample(df, resample_time):
@@ -154,14 +174,19 @@ df5 = time_resample(df2, resample_time)
 # Create species count for selected date range
 
 def update_db():
-    try: 
-        conn = get_connection(URI_SQLITE_DB)
-        cursor = conn.cursor()
-        cursor.execute(f''' UPDATE detections SET Manual_ID = "{corrected}" WHERE File_Name = "{recording}" ''')
-        conn.commit()
-        con.close()
-    except:
-        print('Can\'t alter database')
+    # try: 
+    conn = get_connection(URI_SQLITE_DB)
+    cursor = conn.cursor()
+    cursor.execute(f''' UPDATE detections SET Manual_ID = "{corrected}" WHERE File_Name = "{recording}" ''')
+    conn.commit()
+    # con.close()
+
+#List of minutes in day for time charts
+spacing = 1
+lst=[':'.join(str(i*timedelta(minutes=spacing)).split(':')) for i in range(24*60//spacing)]
+for i in range(len(lst)):
+    if len(lst[i]) == 7:
+        lst[i]='0'+ lst[i]
 
 Specie_Count = df5.value_counts()
 
@@ -183,9 +208,9 @@ top_N_species = (df5.value_counts()[:top_N])
 
 font_size = 15
 
-if daily == False:
+if daily_view == False:
     
-    if resample_time != '1D':
+    if report_type != 'Daily':
         specie = st.selectbox(
         'Which bird would you like to explore for the dates ' 
         + str(start_date) + ' to ' + str(end_date) + '?', 
@@ -193,7 +218,7 @@ if daily == False:
         index = 0)
 
 
-        # specie="Cape Robin-Chat"
+        #specie="Cape Robin-Chat"
         if specie == 'All':
             df_counts = int(hourly[hourly.index==specie]['All'])
             fig = make_subplots(
@@ -325,14 +350,6 @@ if daily == False:
                     date_dir = date_specie['Date'].values[0]
                     specie_dir = date_specie['Com_Name'].values[0].replace(" ","_")
                     st.image(userDir + '/BirdSongs/Extracted/By_Date/'+ date_dir + '/'+ specie_dir + '/' + recording + '.png')
-                    # recording_file = userDir +'/BirdSongs/Extracted/By_Date/'+ date_dir + '/'+ specie_dir + '/' + recording
-                    # html_string = f""" <audio controls autoplay> <source src = " {recording_file}"> </audio> """
-                    # sound = st.empty()
-                    # sound.markdown(html_string, unsafe_allow_html= True)
-                    # print('xxx')
-                    # time.sleep(3)
-                    # print('yyy')
-                    
                     
                     st.audio(userDir +'/BirdSongs/Extracted/By_Date/'+ date_dir + '/'+ specie_dir + '/' + recording)
                 except:
@@ -340,7 +357,7 @@ if daily == False:
             
             cola, colb, colc, cold = st.columns((3,1,1,1))
             with colb:
-                manual_id_checked = (df2.loc[df2['File_Name']==recording]['Manual_ID']!='UNVERIFIED')[0]
+                manual_id_checked = (df2.loc[df2['File_Name']==recording]['Manual_ID']!='Not_Reviewed')[0]
                 verification = st.checkbox('Click to Review', value = manual_id_checked, disabled=manual_id_checked)
             if verification:
                 with colc:
@@ -378,17 +395,7 @@ if daily == False:
                         if isclick:
                             placeholder.empty()
                         df2 = get_db()
-                        # conn = get_connection(URI_SQLITE_DB)
-                        # cursor = conn.cursor()
-                        # cursor.execute(f''' UPDATE detections SET Manual_ID = "{corrected}" WHERE File_Name = "{recording}" ''')
-                        # conn.commit()
- 
-
-                            # except BaseException:
-                            #     print("ERRORRRR")
-                            #     time.sleep(2)
-                
-            
+             
     else:
 
         specie = st.selectbox(
@@ -397,48 +404,97 @@ if daily == False:
         species[1:],
         index = 0)
 
-
-    # filt = df2[df2['Com_Name'] == specie]
-
         df_counts = int(hourly[hourly.index==specie]['All'])
-        fig = st.container()
         fig = make_subplots(
-                        rows=1, cols =1)
-    #                     specs= [[{"type":"xy","rowspan":1},{"type":"heatmap","rowspan":1}]],
-                            
-
-    #                     subplot_titles=('<b>Daily Top '+ str(top_N) + ' Species in Date Range '+ str(start_date) +' to '+ str(end_date) +'</b>',
-    #                                     '<b>Daily ' + specie+ ' Detections on 15 minute intervals </b>'),
-    # #                                     'Total Detect:'+str('{:,}'.format(df_counts))+
-    # #                                     '   Confidence Max:'+str('{:.2f}%'.format(max(df2[df2['Com_Name']==specie]['Confidence'])*100))+
-    # #                                     '   '+'   Median:'+str('{:.2f}%'.format(np.median(df2[df2['Com_Name']==specie]['Confidence'])*100))
-    # #                                     )
-    #                     )
-
-#        fig.add_trace(go.Bar(y=top_N_species.index, x=top_N_species, orientation='h'), row=1,col=1)
-        df4=df2['Com_Name'][df2['Com_Name']==specie].resample('15min').count()
+                            rows=2, cols =1,
+                            row_heights=[0.75,0.25],
+                            specs=[[{"rowspan": 1}],[{"rowspan": 1}]],
+                            shared_xaxes = True,
+                            vertical_spacing = 0
+                            )
+        
+        
+        df4=df2['Com_Name'][df2['Com_Name']==specie].resample(resample_time).count()
+        
         df4.index=[df4.index.date, df4.index.time]
         day_hour_freq=df4.unstack().fillna(0)
 
-        fig_x = [d.strftime('%d-%m-%Y') for d in day_hour_freq.index.tolist()]
-        fig_y = [h.strftime('%H:%M') for h in day_hour_freq.columns.tolist()]
-        fig_z = day_hour_freq.values.transpose()
-#        fig_heatmap = go.Figure(data=go.Heatmap(x=fig_x,y=fig_y,z=fig_z))
+        while  day_hour_freq.index.min() != df2.index.date.min():
+            new_day = pd.DataFrame(index= [day_hour_freq.index.min()-timedelta(days = 1)], columns= day_hour_freq.columns).fillna(0)
+            day_hour_freq = pd.concat([new_day, day_hour_freq])
 
-        # fig.update_layout(
-        # margin=dict(l=0, r=0, t=50, b=0),
-        # yaxis={'categoryorder':'total ascending'})
+        while  day_hour_freq.index.max() != df2.index.date.max():
+            new_day = pd.DataFrame(index= [day_hour_freq.index.max()+timedelta(days = 1)], columns= day_hour_freq.columns).fillna(0)
+            day_hour_freq = pd.concat([day_hour_freq, new_day])
+
+
+        fig_x = [d.strftime('%d-%m-%Y') for d in day_hour_freq.index.tolist()]
+        fig_y = [h.hour*60+h.minute for h in day_hour_freq.columns.tolist()]
+        fig_z = day_hour_freq.values.transpose()
+       
+        
+        fig_sunr = df_daylight['sunr_min'][df_daylight['date'].isin(fig_x)]
+        fig_suns = df_daylight['suns_min'][df_daylight['date'].isin(fig_x)]
+        fig_dawn = df_daylight['dawn_min'][df_daylight['date'].isin(fig_x)]
+        fig_dusk = df_daylight['dusk_min'][df_daylight['date'].isin(fig_x)]
+
+
         color_pals= px.colors.named_colorscales()
         selected_pal = st.sidebar.selectbox('Select Color Pallet for Daily Detections', color_pals)
-        fig.add_trace(go.Heatmap(x=fig_x,y=fig_y,z=fig_z, autocolorscale = False, colorscale = selected_pal), row=1, col=1)
-        st.plotly_chart(fig, use_container_width=True)  # , config=config)
+        
+        fig.add_trace(go.Heatmap(x=fig_x,y=fig_y,z=fig_z, autocolorscale = False, 
+                                showlegend = False,
+                                colorbar= dict(len = 0.5),
+                                colorscale = [
+                                [0, "rgb(0, 0, 0)"],
+                                [0.25, "rgb(120, 120, 120)"],
+
+                                [0.25, "rgb(120, 120, 120)"],
+                                [0.5, "rgb(160, 160, 160)"],
+
+                                [0.5, "rgb(160, 160, 160)"],
+                                [0.75, "rgb(210, 210, 210)"],
+
+                                [0.75, "rgb(210, 210, 210)"],
+                                [1.0, "rgb(260, 260, 260)"]
+                                ]
+                                ),
+                                row=1, col=1)
+                                
+        fig.add_trace(go.Scatter(x=fig_x, y= fig_dawn, showlegend = False, fill = 'tozeroy', line_color='black'), row=1, col=1)
+        fig.add_trace(go.Scatter(x=fig_x, y= fig_sunr, showlegend = False, fill = 'tonexty', line_color='grey'), row=1, col=1)
+        fig.add_trace(go.Scatter(x=fig_x, y= fig_suns, showlegend = False, fill = 'tonexty', line_color='darkgreen'), row=1, col=1)
+        fig.add_trace(go.Scatter(x=fig_x, y= fig_dusk, showlegend = False, fill = 'tonexty', line_color='grey'), row=1, col=1)
+        
+        fig.update_yaxes(row= 1, col =1, tickvals=[i*60 for i in range(24)],
+                            ticktext=['12am', '1am', '2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am',
+                                    '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm'],
+                                    title_text="Time")
+        
+        fig.update_yaxes(row= 2, col =1,
+                        title_text= f"Detections per {resample_time}")
+
+        fig.update_xaxes(row= 2, col =1,
+                        title_text= f"Date",
+                        fixedrange= True)
+        fig.update_xaxes(row= 1, col =1,
+                        fixedrange= True)                          
+        
+        fig.update_layout(width = 1500, height = 750,
+                        title = f" Detections of {specie} on a {resample_time} basis between {start_date:%d-%m-%Y} and {end_date:%d-%m-%Y}")
+
+        daily = pd.crosstab(df5, df5.index.date, dropna=True, margins = True)
+           
+        fig.add_trace(go.Bar(x=daily.columns[:-1], y=daily.loc[specie][:-1], showlegend = False, marker_color='seagreen'), row=2, col=1)
+ 
+        st.plotly_chart(fig, width= 1500, height= 750, use_container_width=False)  # , config=config)
 else:
     fig = make_subplots(
         rows=1, cols=2,
         specs=[[{"type": "xy", "rowspan": 1}, {"type": "xy", "rowspan": 1}]],
         subplot_titles=('<b>Top ' + str(top_N) + ' Species For ' + str(start_date) + '</b>',
                         '<b>Daily ' + str(start_date) + ' Detections on ' + resample_sel + ' interval</b>'),
-        shared_yaxes='all',
+        shared_yaxes = 'all',
         horizontal_spacing=0
     )
 
@@ -474,10 +530,17 @@ else:
 
     labels = heat.values.astype(int).astype('str')
     labels[labels == '0'] = ""
-    fig.add_trace(go.Heatmap(x=heat.columns, y=heat.index, z=heat_values_normalized,  # heat.values,
+    fig.add_trace(go.Heatmap(x=heat.columns, y=heat.index, z=heat_values_normalized,
                              showscale=False,
                              text=labels, texttemplate="%{text}", colorscale='Blugrn'
-                             ), row=1, col=2)
+                             ),row = 1, col =2)
+    fig.update_xaxes(row= 1, col =1,
+                        title_text= f"Detections on {resample_time} interval",
+                        fixedrange= True)
+    fig.update_xaxes(row= 1, col =2,
+                        title_text= f"Time",
+                        fixedrange= True)                          
+        
     fig.update_yaxes(visible=True, autorange="reversed", ticks="inside", tickson="boundaries", ticklen=10000,
                      showgrid=True)
     fig.update_layout(xaxis_ticks="inside",
