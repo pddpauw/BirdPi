@@ -33,6 +33,7 @@ def get_detections():
             detection["Sens"] = i["Sens"]
             detection["Overlap"] = i["Overlap"]
             detection["File_Name"] = i["File_Name"]
+            detection["Manual_ID"] = i["Manual_ID"]
             detections.append(detection)
 
     except:
@@ -48,6 +49,72 @@ def get_detections_by_com_name(com_name):
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         cur.execute("SELECT * FROM detections WHERE Com_Name LIKE ?", (com_name,))
+        rows = cur.fetchall()
+<<<<<<< HEAD
+
+        # convert row objects to dictionary
+        for i in rows:
+            detection = {}
+            detection["Date"] = i["Date"]
+            detection["Time"] = i["Time"]
+            detection["Sci_Name"] = i["Sci_Name"]
+            detection["Com_Name"] = i["Com_Name"]
+            detection["Confidence"] = i["Confidence"]
+            detection["Lat"] = i["Lat"]
+            detection["Lon"] = i["Lon"]
+            detection["Cutoff"] = i["Cutoff"]
+            detection["Week"] = i["Week"]
+            detection["Sens"] = i["Sens"]
+            detection["Overlap"] = i["Overlap"]
+            detection["File_Name"] = i["File_Name"]
+            detections.append(detection)
+
+    except:
+        print("shit")
+        detections = []
+
+    return detections 
+
+def get_detections_by_sci_name(sci_name):
+    detections = []
+    try:
+        conn = connect_to_db()
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM detections WHERE Sci_Name LIKE ?", (sci_name,))
+        rows = cur.fetchall()
+
+        # convert row objects to dictionary
+        for i in rows:
+            detection = {}
+            detection["Date"] = i["Date"]
+            detection["Time"] = i["Time"]
+            detection["Sci_Name"] = i["Sci_Name"]
+            detection["Com_Name"] = i["Com_Name"]
+            detection["Confidence"] = i["Confidence"]
+            detection["Lat"] = i["Lat"]
+            detection["Lon"] = i["Lon"]
+            detection["Cutoff"] = i["Cutoff"]
+            detection["Week"] = i["Week"]
+            detection["Sens"] = i["Sens"]
+            detection["Overlap"] = i["Overlap"]
+            detection["File_Name"] = i["File_Name"]
+            detection["Manual_ID"] = i["Manual_ID"]
+            detections.append(detection)
+
+    except:
+        print("shit")
+        detections = []
+
+    return detections 
+
+def get_detections_by_date(date):
+    detections = []
+    try:
+        conn = connect_to_db()
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM detections WHERE DATE LIKE ? ORDER BY Time Desc", (date,))
         rows = cur.fetchall()
 
         # convert row objects to dictionary
