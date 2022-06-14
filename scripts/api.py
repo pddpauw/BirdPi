@@ -141,78 +141,39 @@ def get_detections_by_date(date):
 
     return detections 
 
-def update_user(user):
-    updated_user = {}
-    try:
-        conn = connect_to_db()
-        cur = conn.cursor()
-        cur.execute("UPDATE users SET name = ?, email = ?, phone = ?, address = ?, country = ? WHERE com_name =?", (user["name"], user["email"], user["phone"], user["address"], user["country"], user["com_name"],))
-        conn.commit()
-        #return the user
-        updated_user = get_detections_by_com_name(user["com_name"])
-
-    except:
-        conn.rollback()
-        updated_user = {}
-    finally:
-        conn.close()
-
-    return updated_user
-
-
-def delete_user(com_name):
-    message = {}
-    try:
-        conn = connect_to_db()
-        conn.execute("DELETE from users WHERE com_name = ?", (com_name,))
-        conn.commit()
-        message["status"] = "User deleted successfully"
-    except:
-        conn.rollback()
-        message["status"] = "Cannot delete user"
-    finally:
-        conn.close()
-
-    return message
-
-
-users = []
-user0 = {
-    "name": "Charles Effiong",
-    "email": "charles@gamil.com",
-    "phone": "067765665656",
-    "address": "Lui Str, Innsbruck",
-    "country": "Austria"
-}
-
-user1 = {
-    "name": "Sam Adebanjo",
-    "email": "samadebanjo@gamil.com",
-    "phone": "098765465",
-    "address": "Sam Str, Vienna",
-    "country": "Austria"
-}
-
-user2 = {
-    "name": "John Doe",
-    "email": "johndoe@gamil.com",
-    "phone": "067765665656",
-    "address": "John Str, Linz",
-    "country": "Austria"
-}
-
-user3 = {
-    "name": "Mary James",
-    "email": "maryjames@gamil.com",
-    "phone": "09878766676",
-    "address": "AYZ Str, New york",
-    "country": "United states"
-}
-
-users.append(user0)
-users.append(user1)
-users.append(user2)
-users.append(user3)
+#def update_user(user):
+#    updated_user = {}
+#    try:
+#        conn = connect_to_db()
+#        cur = conn.cursor()
+#        cur.execute("UPDATE users SET name = ?, email = ?, phone = ?, address = ?, country = ? WHERE com_name =?", (user["name"], user["email"], user["phone"], user["address"], user["country"], user["com_name"],))
+#        conn.commit()
+#        #return the user
+#        updated_user = get_detections_by_com_name(user["com_name"])
+#
+#    except:
+#        conn.rollback()
+#        updated_user = {}
+#    finally:
+#        conn.close()
+#
+#    return updated_user
+#
+#
+#def delete_user(com_name):
+#    message = {}
+#    try:
+#        conn = connect_to_db()
+#        conn.execute("DELETE from users WHERE com_name = ?", (com_name,))
+#        conn.commit()
+#        message["status"] = "User deleted successfully"
+#    except:
+#        conn.rollback()
+#        message["status"] = "Cannot delete user"
+#    finally:
+#        conn.close()
+#
+#    return message
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -234,19 +195,20 @@ def api_get_detections_by_com_name(com_name):
 def api_get_detections_by_sci_name(sci_name):
     return jsonify(get_detections_by_sci_name(sci_name))
 
-@app.route('/api/users/add',  methods = ['POST'])
-def api_add_user():
-    user = request.get_json()
-    return jsonify(insert_user(user))
-
-@app.route('/api/users/update',  methods = ['PUT'])
-def api_update_user():
-    user = request.get_json()
-    return jsonify(update_user(user))
-
-@app.route('/api/users/delete/<com_name>',  methods = ['DELETE'])
-def api_delete_user(com_name):
-    return jsonify(delete_user(com_name))
+#
+#@app.route('/api/users/add',  methods = ['POST'])
+#def api_add_user():
+#    user = request.get_json()
+#    return jsonify(insert_user(user))
+#
+#@app.route('/api/users/update',  methods = ['PUT'])
+#def api_update_user():
+#    user = request.get_json()
+#    return jsonify(update_user(user))
+#
+#@app.route('/api/users/delete/<com_name>',  methods = ['DELETE'])
+#def api_delete_user(com_name):
+#    return jsonify(delete_user(com_name))
 
 
 if __name__ == "__main__":
