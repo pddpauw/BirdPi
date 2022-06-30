@@ -298,7 +298,7 @@ Restart=on-failure
 RestartSec=5
 Type=simple
 User=$USER
-ExecStart=rclone rcd --rc-web-gui --rc-baseurl=rclone --rc-user=birdnet --rc-pass=$CADDY_PWD
+ExecStart=bash -c 'source /etc/birdnet/birdnet.conf; if ! [ -z $CADDY_PWD ];then rclone rcd --rc-web-gui --rc-baseurl=rclone --rc-user=birdnet --rc-pass=$CADDY_PWD;elif [ -z $CADDY_PWD ];then rclone rcd --rc-web-gui --rc-baseurl=rclone --rc-user=birdnet --rc-pass=rclone;fi'
 
 [Install]
 WantedBy=multi-user.target
