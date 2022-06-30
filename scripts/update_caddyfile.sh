@@ -70,3 +70,7 @@ fi
 
 sudo caddy fmt --overwrite /etc/caddy/Caddyfile
 sudo systemctl reload caddy
+if systemctl is-active rclone &>/dev/null;then
+  sudo systemctl daemon-reload
+  sudo systemctl restart rclone
+fi
