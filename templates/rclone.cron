@@ -1,0 +1,5 @@
+#birdnet
+*/30 * * * * birdie rclone rc --url http://localhost:5572/rclone --rc-user=birdnet --rc-pass=$CADDY_PWD operations/copyfile srcFs=$HOME/BirdNET-Pi/scripts srcRemote=birds.db dstFs=birds_db: dstRemote=BirdNET-Pi/
+#birdnet
+50 * * * * birdie rclone rc --url http://localhost:5572/rclone --rc-user=birdnet --rc-pass=$CADDY_PWD sync/sync srcFs=$EXTRACTED/By_Date dstFs=birds_db:BirdNET-Pi/By_Date
+
