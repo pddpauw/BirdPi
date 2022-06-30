@@ -216,11 +216,15 @@ http:// ${BIRDNETPI_URL} {
   basicauth /terminal* {
     birdnet ${HASHWORD}
   }
+  basicauth /rclone* {
+    birdnet ${HASHWORD}
+  }
   reverse_proxy /stream localhost:8000
   php_fastcgi unix//run/php/php7.4-fpm.sock
   reverse_proxy /log* localhost:8080
   reverse_proxy /stats* localhost:8501
   reverse_proxy /terminal* localhost:8888
+  reverse_proxy /rclone* localhost:5572
 }
 EOF
   else
@@ -239,6 +243,7 @@ http:// ${BIRDNETPI_URL} {
   reverse_proxy /log* localhost:8080
   reverse_proxy /stats* localhost:8501
   reverse_proxy /terminal* localhost:8888
+  reverse_proxy /rclone* localhost:5572
 }
 EOF
   fi
