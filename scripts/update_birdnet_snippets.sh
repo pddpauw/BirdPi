@@ -105,7 +105,8 @@ fi
 
 # Install new rclone.service if not already available
 if ! [ -f $HOME/BirdNET-Pi/templates/rclone.service ];then
- cat << EOF > $HOME/BirdNET-Pi/templates/rclone.service
+  sudo apt update && sudo apt -y install rclone 
+  cat << EOF > $HOME/BirdNET-Pi/templates/rclone.service
 [Unit]
 Description=Backup Tool
 [Service]
