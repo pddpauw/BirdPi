@@ -20,7 +20,7 @@ install_depends() {
   apt install -qqy caddy ftpd sqlite3 php-sqlite3 alsa-utils \
     pulseaudio avahi-utils sox libsox-fmt-mp3 php php-fpm php-curl php-xml \
     php-zip icecast2 swig ffmpeg wget unzip curl cmake make bc libjpeg-dev \
-    zlib1g-dev python3-dev python3-pip python3-venv lsof
+    zlib1g-dev python3-dev python3-pip python3-venv lsof rclone
 }
 
 
@@ -284,6 +284,23 @@ EOF
   systemctl enable birdnet_stats.service
 }
 
+install_rclone_service {
+  cat << EOF > $HOME/BirdNET-Pi/templates/rclone.service
+[Unit]
+Description=Backup Tool
+[Service]
+Restart=on-failure
+RestartSec=5
+Type=simple
+User=$USER
+ExecStart=rclone rcd --rc-web-gui --rc-baseurl=rclone --rc-user=birdnet --rc-pass=$CADDY_PWD
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/rclone.service /usr/lib/systemd/system
+}
+
 install_spectrogram_service() {
   cat << EOF > $HOME/BirdNET-Pi/templates/spectrogram_viewer.service
 [Unit]
@@ -432,6 +449,7 @@ install_services() {
   install_recording_service
   install_custom_recording_service # But does not enable
   install_extraction_service
+  install_rclone_service
   install_spectrogram_service
   install_chart_viewer_service
   install_gotty_logs
