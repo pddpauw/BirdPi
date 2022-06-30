@@ -59,6 +59,12 @@
     <button type="submit" name="submit" value="sudo systemctl disable --now birdnet_recording.service">Disable</button>
     <button type="submit" name="submit" value="sudo systemctl enable --now birdnet_recording.service">Enable</button>
   </form>
+    <h3>Rclone Backup Service</h3>
+    <button type="submit" name="submit" value="sudo systemctl stop rclone.service">Stop</button>
+    <button type="submit" name="submit" value="sudo systemctl restart rclone.service">Restart</button>
+    <button type="submit" name="submit" value="sudo systemctl disable --now rclone.service">Disable</button>
+    <button type="submit" name="submit" value="sudo systemctl enable --now rclone.service">Enable</button>
+  </form>
   <form action="" method="GET">
     <h3>Chart Viewer</h3>
     <button type="submit" name="submit" value="sudo systemctl stop chart_viewer.service">Stop</button>
