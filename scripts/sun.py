@@ -1,13 +1,32 @@
 import os
 import datetime
 from datetime import date, timedelta
+try: 
+    from astral import LocationInfo
+except ImportError:
+    from pip._internal import main as pip
+    pip(['install', '--user', 'astral'])
+    import astral
 from astral import LocationInfo
+
 from astral.sun import sun
 import sqlite3
 from sqlite3 import Connection
-import pandas as pd
+try:
+    import pandas as pd
+except:
+    from pip._internal import main as pip
+    pip(['install', '--user', 'pandas'])
+    import pandas as pd
 import os
-import tzlocal
+try:
+   import tzlocal
+except:
+    from pip._internal import main as pip
+    pip(['install', '--user', 'tzlocal'])
+    import tzlocal
+
+
 
 # Open most recent Configuration and grab DB_PWD as a python variable
 userDir = os.path.expanduser('~')
