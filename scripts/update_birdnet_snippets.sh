@@ -7,7 +7,7 @@ HOME=$(awk -F: '/1000/ {print $6}' /etc/passwd)
 my_dir=$HOME/BirdNET-Pi/scripts
 
 # Sets proper permissions and ownership
-sudo -E chown -R $USER:$USER $HOME/*
+sudo -E chown -R $USER:$(id -g) $HOME/*
 sudo chmod -R g+wr $HOME/*
 
 if ! grep PRIVACY_THRESHOLD /etc/birdnet/birdnet.conf &>/dev/null;then
