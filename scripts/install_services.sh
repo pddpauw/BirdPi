@@ -93,6 +93,22 @@ EOF
   systemctl enable extraction.service
 }
 
+install_api() {
+  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_api.service
+[Unit]
+Description=BirdNET API
+[Service]
+Restart=on-failure
+RestartSec=3
+Type=simple
+User=birdie
+ExecStart=$PYTHON_VIRTUAL_ENV /usr/local/bin/api.py
+[Install]
+WantedBy=multi-user.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/birdnet_api.service /usr/lib/systemd/system
+}
+
 create_necessary_dirs() {
   echo "Creating necessary directories"
   [ -d ${EXTRACTED} ] || sudo -u ${USER} mkdir -p ${EXTRACTED}
@@ -224,6 +240,7 @@ http:// ${BIRDNETPI_URL} {
   reverse_proxy /log* localhost:8080
   reverse_proxy /stats* localhost:8501
   reverse_proxy /terminal* localhost:8888
+  reverse_proxy /api* localhost:5000
   reverse_proxy /rclone* localhost:5572
 }
 EOF
@@ -243,6 +260,7 @@ http:// ${BIRDNETPI_URL} {
   reverse_proxy /log* localhost:8080
   reverse_proxy /stats* localhost:8501
   reverse_proxy /terminal* localhost:8888
+  reverse_proxy /api* localhost:5000
   reverse_proxy /rclone* localhost:5572
 }
 EOF
@@ -455,6 +473,7 @@ install_services() {
   install_custom_recording_service # But does not enable
   install_extraction_service
   install_rclone_service
+  install_api
   install_spectrogram_service
   install_chart_viewer_service
   install_gotty_logs

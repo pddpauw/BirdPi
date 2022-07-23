@@ -44,6 +44,7 @@ http:// ${BIRDNETPI_URL} {
   reverse_proxy /log* localhost:8080
   reverse_proxy /stats* localhost:8501
   reverse_proxy /terminal* localhost:8888
+  reverse_proxy /api* localhost:5000
   reverse_proxy /rclone* localhost:5572
 }
 EOF
@@ -63,6 +64,7 @@ http:// ${BIRDNETPI_URL} {
   reverse_proxy /log* localhost:8080
   reverse_proxy /stats* localhost:8501
   reverse_proxy /terminal* localhost:8888
+  reverse_proxy /api* localhost:5000
   reverse_proxy /rclone* localhost:5572
 }
 EOF

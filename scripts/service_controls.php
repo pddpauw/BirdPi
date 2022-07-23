@@ -94,6 +94,13 @@ function service_status($name) {
     <button type="submit" name="submit" value="sudo systemctl enable --now chart_viewer.service">Enable</button>
   </form>
   <form action="" method="GET">
+    <h3>Database API <?php echo service_status("birdnet_api.service");?></h3>
+    <button type="submit" name="submit" value="sudo systemctl stop birdnet_api.service">Stop</button>
+    <button type="submit" name="submit" value="sudo systemctl restart birdnet_api.service">Restart</button>
+    <button type="submit" name="submit" value="sudo systemctl disable --now birdnet_api.service">Disable</button>
+    <button type="submit" name="submit" value="sudo systemctl enable --now birdnet_api.service">Enable</button>
+  </form>
+  <form action="" method="GET">
     <h3>Spectrogram Viewer <?php echo service_status("spectrogram_viewer.service");?></h3>
     <button type="submit" name="submit" value="sudo systemctl stop spectrogram_viewer.service">Stop</button>
     <button type="submit" name="submit" value="sudo systemctl restart spectrogram_viewer.service">Restart</button>
