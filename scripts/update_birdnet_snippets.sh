@@ -7,7 +7,7 @@ HOME=$(awk -F: '/1000/ {print $6}' /etc/passwd)
 my_dir=$HOME/BirdNET-Pi/scripts
 
 # Sets proper permissions and ownership
-sudo -E chown -R $USER:$USER $HOME/*
+sudo -E chown -R $USER:$(id -g) $HOME/*
 sudo chmod -R g+wr $HOME/*
 
 if ! grep PRIVACY_THRESHOLD /etc/birdnet/birdnet.conf &>/dev/null;then
@@ -141,6 +141,44 @@ ExecStart=$HOME/BirdNET-Pi/birdnet/bin/python3 /usr/local/bin/api.py
 WantedBy=multi-user.target
 EOF
   sudo ln -sf $HOME/BirdNET-Pi/templates/birdnet_api.service /lib/systemd/system
+
+# Install new rclone.service if not already available
+if ! [ -f $HOME/BirdNET-Pi/templates/rclone.service ];then
+  sudo apt update && sudo apt -y install rclone 
+  cat << EOF > $HOME/BirdNET-Pi/templates/rclone.service
+[Unit]
+Description=Backup Tool
+[Service]
+Restart=on-failure
+RestartSec=5
+Type=simple
+User=$USER
+ExecStart=bash -c 'source /etc/birdnet/birdnet.conf; if ! [ -z \$CADDY_PWD ];then rclone rcd --rc-web-gui --rc-baseurl=rclone --rc-user=birdnet --rc-pass=\$CADDY_PWD;elif [ -z \$CADDY_PWD ];then rclone rcd --rc-web-gui --rc-baseurl=rclone --rc-user=birdnet --rc-pass=rclone;fi'
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  sudo ln -sf $HOME/BirdNET-Pi/templates/rclone.service /usr/lib/systemd/system
+fi
+
+# Install new rclone.service if not already available
+if ! [ -f $HOME/BirdNET-Pi/templates/rclone.service ];then
+  sudo apt update && sudo apt -y install rclone 
+  cat << EOF > $HOME/BirdNET-Pi/templates/rclone.service
+[Unit]
+Description=Backup Tool
+[Service]
+Restart=on-failure
+RestartSec=5
+Type=simple
+User=$USER
+ExecStart=bash -c 'source /etc/birdnet/birdnet.conf; if ! [ -z $CADDY_PWD ];then rclone rcd --rc-web-gui --rc-baseurl=rclone --rc-user=birdnet --rc-pass=$CADDY_PWD;elif [ -z $CADDY_PWD ];then rclone rcd --rc-web-gui --rc-baseurl=rclone --rc-user=birdnet --rc-pass=rclone;fi'
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  sudo ln -sf $HOME/BirdNET-Pi/templates/rclone.service /usr/lib/systemd/system
+
 fi
 
 sudo systemctl daemon-reload

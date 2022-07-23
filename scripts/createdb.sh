@@ -16,5 +16,5 @@ CREATE TABLE IF NOT EXISTS detections (
   Overlap FLOAT,
   File_Name VARCHAR(100) NOT NULL);
 EOF
-chown $USER:$USER $HOME/BirdNET-Pi/scripts/birds.db
+chown $USER:$(id -g) $HOME/BirdNET-Pi/scripts/birds.db
 chmod g+w $HOME/BirdNET-Pi/scripts/birds.db

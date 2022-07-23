@@ -918,12 +918,13 @@ Caddy, WiFi-Connect,Streamlit, and Adminer use the Apache License Version 2.0
    limitations under the License.
 
 =============================================================================
-GoTTY and Apprise Notifications use the MIT License
+GoTTY, Apprise Notifications, and Rclone use the MIT License
 =============================================================================
 MIT License
 
 autoAP - Copywrite (c) 2021 Benn
 GoTTY - Copyright (c) 2015-2017 Iwasaki Yudai
+Rclone - Copyright (C) 2012 by Nick Craig-Wood http://www.craig-wood.com/nick
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

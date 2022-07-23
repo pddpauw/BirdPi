@@ -20,7 +20,7 @@ install_depends() {
   apt install -qqy caddy ftpd sqlite3 php-sqlite3 alsa-utils \
     pulseaudio avahi-utils sox libsox-fmt-mp3 php php-fpm php-curl php-xml \
     php-zip icecast2 swig ffmpeg wget unzip curl cmake make bc libjpeg-dev \
-    zlib1g-dev python3-dev python3-pip python3-venv lsof
+    zlib1g-dev python3-dev python3-pip python3-venv lsof rclone
 }
 
 
@@ -145,7 +145,7 @@ generate_BirdDB() {
   elif ! grep Date $my_dir/BirdDB.txt;then
     sudo -u ${USER} sed -i '1 i\Date;Time;Sci_Name;Com_Name;Confidence;Lat;Lon;Cutoff;Week;Sens;Overlap' $my_dir/BirdDB.txt
   fi
-  chown $USER:$USER ${my_dir}/BirdDB.txt && chmod g+rw ${my_dir}/BirdDB.txt
+  chown $USER:$(id -g) ${my_dir}/BirdDB.txt && chmod g+rw ${my_dir}/BirdDB.txt
 }
 
 set_login() {
@@ -232,12 +232,16 @@ http:// ${BIRDNETPI_URL} {
   basicauth /terminal* {
     birdnet ${HASHWORD}
   }
+  basicauth /rclone* {
+    birdnet ${HASHWORD}
+  }
   reverse_proxy /stream localhost:8000
   php_fastcgi unix//run/php/php7.4-fpm.sock
   reverse_proxy /log* localhost:8080
   reverse_proxy /stats* localhost:8501
   reverse_proxy /terminal* localhost:8888
   reverse_proxy /api* localhost:5000
+  reverse_proxy /rclone* localhost:5572
 }
 EOF
   else
@@ -257,6 +261,7 @@ http:// ${BIRDNETPI_URL} {
   reverse_proxy /stats* localhost:8501
   reverse_proxy /terminal* localhost:8888
   reverse_proxy /api* localhost:5000
+  reverse_proxy /rclone* localhost:5572
 }
 EOF
   fi
@@ -300,6 +305,23 @@ WantedBy=multi-user.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_stats.service /usr/lib/systemd/system
   systemctl enable birdnet_stats.service
+}
+
+install_rclone_service {
+  cat << EOF > $HOME/BirdNET-Pi/templates/rclone.service
+[Unit]
+Description=Backup Tool
+[Service]
+Restart=on-failure
+RestartSec=5
+Type=simple
+User=$USER
+ExecStart=bash -c 'source /etc/birdnet/birdnet.conf; if ! [ -z \$CADDY_PWD ];then rclone rcd --rc-web-gui --rc-baseurl=rclone --rc-user=birdnet --rc-pass=\$CADDY_PWD;elif [ -z \$CADDY_PWD ];then rclone rcd --rc-web-gui --rc-baseurl=rclone --rc-user=birdnet --rc-pass=rclone;fi'
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/rclone.service /usr/lib/systemd/system
 }
 
 install_spectrogram_service() {
@@ -432,7 +454,7 @@ install_weekly_cron() {
 }
 
 chown_things() {
-  chown -R $USER:$USER $HOME/Bird*
+  chown -R $USER:$(id -g) $HOME/Bird*
 }
 
 install_services() {
@@ -450,6 +472,8 @@ install_services() {
   install_recording_service
   install_custom_recording_service # But does not enable
   install_extraction_service
+  install_rclone_service
+  install_api
   install_spectrogram_service
   install_chart_viewer_service
   install_gotty_logs

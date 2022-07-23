@@ -80,6 +80,13 @@ function service_status($name) {
     <button type="submit" name="submit" value="sudo systemctl enable --now birdnet_recording.service">Enable</button>
   </form>
   <form action="" method="GET">
+    <h3>Rclone Backup Service <?php echo service_status("rclone.service");?></h3>
+    <button type="submit" name="submit" value="sudo systemctl stop rclone.service">Stop</button>
+    <button type="submit" name="submit" value="sudo systemctl restart rclone.service">Restart</button>
+    <button type="submit" name="submit" value="sudo systemctl disable --now rclone.service">Disable</button>
+    <button type="submit" name="submit" value="sudo systemctl enable --now rclone.service">Enable</button>
+  </form>
+  <form action="" method="GET">
     <h3>Chart Viewer <?php echo service_status("chart_viewer.service");?></h3>
     <button type="submit" name="submit" value="sudo systemctl stop chart_viewer.service">Stop</button>
     <button type="submit" name="submit" value="sudo systemctl restart chart_viewer.service">Restart</button>
