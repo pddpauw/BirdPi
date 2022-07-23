@@ -129,7 +129,7 @@ generate_BirdDB() {
   elif ! grep Date $my_dir/BirdDB.txt;then
     sudo -u ${USER} sed -i '1 i\Date;Time;Sci_Name;Com_Name;Confidence;Lat;Lon;Cutoff;Week;Sens;Overlap' $my_dir/BirdDB.txt
   fi
-  chown $USER:$USER ${my_dir}/BirdDB.txt && chmod g+rw ${my_dir}/BirdDB.txt
+  chown $USER:$(id -g) ${my_dir}/BirdDB.txt && chmod g+rw ${my_dir}/BirdDB.txt
 }
 
 set_login() {
@@ -436,7 +436,7 @@ install_weekly_cron() {
 }
 
 chown_things() {
-  chown -R $USER:$USER $HOME/Bird*
+  chown -R $USER:$(id -g) $HOME/Bird*
 }
 
 install_services() {
