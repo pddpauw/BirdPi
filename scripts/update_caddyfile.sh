@@ -66,6 +66,7 @@ http:// ${BIRDNETPI_URL} {
   reverse_proxy /terminal* localhost:8888
   reverse_proxy /api* localhost:5000
   reverse_proxy /rclone* localhost:5572
+  redir /rclone /rclone/#/dashboard
 }
 EOF
 fi
