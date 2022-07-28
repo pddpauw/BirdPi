@@ -54,11 +54,6 @@ def get_data(conn: Connection):
     return df1
 
 
-def get_data2(conn: Connection):
-    df1 = pd.read_sql("SELECT * FROM daylight", con=conn)
-    return df1
-
-
 @st.experimental_memo
 def get_db():
     conn = get_connection(URI_SQLITE_DB)
@@ -127,27 +122,6 @@ def time_resample(df, resample_time):
 
 df5 = time_resample(df2, resample_time)
 
-
-def update_db():
-    # try:
-    conn = get_connection(URI_SQLITE_DB)
-    cursor = conn.cursor()
-    cursor.execute(
-        f""" UPDATE detections SET Manual_ID = "{corrected}" WHERE File_Name = "{recording}" """
-    )
-    conn.commit()
-    # con.close()
-
-
-# List of minutes in day for time charts
-spacing = 1
-lst = [
-    ":".join(str(i * timedelta(minutes=spacing)).split(":"))
-    for i in range(24 * 60 // spacing)
-]
-for i in range(len(lst)):
-    if len(lst[i]) == 7:
-        lst[i] = "0" + lst[i]
 
 Specie_Count = df5.value_counts()
 
