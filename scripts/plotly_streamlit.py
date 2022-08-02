@@ -54,7 +54,6 @@ def get_data(conn: Connection):
     return df1
 
 
-@st.experimental_memo
 def get_db():
     conn = get_connection(URI_SQLITE_DB)
     df = get_data(conn)
@@ -450,8 +449,17 @@ else:
                 return 0
 
         try:
-            wiki_image = get_wiki_image(specie)
+            wiki_image = get_wiki_image(df2[df2["Com_Name"] == specie]["Sci_Name"][0])
             st.image(wiki_image, width=300)
             st.caption("Source: Wikipedia")
         except:
             st.title("Can't access image")
+
+        specie_filter = df2[df2["Com_Name"] == specie]
+
+        specie_filter2 = specie_filter[specie_filter["Manual_ID"] != "Not_Reviewed"]
+        true_positives = len(specie_filter[specie_filter["Manual_ID"] == specie])
+        false_positives = len(specie_filter2) - true_positives
+        st.subheader("Manual ID's")
+        st.write("True Positives:", true_positives)
+        st.write("False Positives", false_positives)
