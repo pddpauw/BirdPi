@@ -54,7 +54,7 @@ body::-webkit-scrollbar {
   <button type="submit" name="view" value="View Log" form="views">View Log</button>
 </form>
 <form action="" id="toolsbtn" method="GET" id="views">
-  <button type="submit" name="view" value="Tools" form="views">Tools<?php if(isset($_SESSION['behind']) && intval($_SESSION['behind']) >= 50 && ($config['SILENCE_UPDATE_INDICATOR'] != 1)){ $updatediv = ' <div class="updatenumber">'.$_SESSION["behind"].'</div>'; } else { $updatediv = ""; } echo $updatediv; ?></button>
+  <button type="submit" name="view" value="Login" form="views">Tools<?php if(isset($_SESSION['behind']) && intval($_SESSION['behind']) >= 50 && ($config['SILENCE_UPDATE_INDICATOR'] != 1)){ $updatediv = ' <div class="updatenumber">'.$_SESSION["behind"].'</div>'; } else { $updatediv = ""; } echo $updatediv; ?></button>
 </form>
 <button href="javascript:void(0);" class="icon" onclick="myFunction()"><img src="images/menu.png"></button>
 </div>
@@ -68,7 +68,9 @@ window.onload = function() {
   };
 
   for (var i = 0; i < elements.length; i++) {
+    if(elements[i].value != "Login"){
       elements[i].addEventListener('click', setViewsOpacity, false);
+    }
   }
 };
 var topbuttons = document.querySelectorAll("button[form='views']");
@@ -108,6 +110,7 @@ if(isset($_GET['view'])){
   if($_GET['view'] == "Weekly Report"){include('weekly_report.php');}
   if($_GET['view'] == "Streamlit"){echo "<iframe src=\"/stats\"></iframe>";}
   if($_GET['view'] == "Daily Charts"){include('history.php');}
+  if($_GET['view'] == "Login"){include('scripts/login.php');}
   if($_GET['view'] == "Tools"){
     $caddypwd = $config['CADDY_PWD'];
     if (!isset($_SERVER['PHP_AUTH_USER'])) {
