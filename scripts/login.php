@@ -3,6 +3,11 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+if (isset($_SERVER['PHP_AUTH_USER'])) {
+	header('Location: views.php?view=Tools');
+	exit;
+}
+
 $db = new SQLite3('./scripts/birds.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 if($db == False){
   echo "Database is busy";
