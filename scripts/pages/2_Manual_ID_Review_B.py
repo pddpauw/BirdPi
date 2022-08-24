@@ -231,7 +231,7 @@ rating_list = []
 
 # try:
 #     st.header("Sample Review Form")
-with st.form("Review"):
+with st.form("Review", clear_on_submit=True):
     if len(review_recordings)>0:
         for i in st.columns(len(review_recordings)):
 
@@ -291,7 +291,7 @@ with st.form("Review"):
                     rating = st.select_slider(
                         "Rating",
                         options=["*****", "****", "***", "**", "*", "NULL"],
-                        value=rating,
+                        value="NULL",
                         help="Select your rating for the sample quality - *=bad; ****=excellent",
                         key = "slider1"+str(i),
                     )
