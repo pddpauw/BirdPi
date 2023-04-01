@@ -18,3 +18,12 @@ exclude_species_list.txt
 firstrun.ini
 HUMAN.txt
 include_species_list.txt
+.idea/workspace.xml
+.idea/vcs.xml
+.idea/php.xml
+.idea/modules.xml
+.idea/misc.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/encodings.xml
+.idea/deployment.xml
+.idea/BirdNET-Pi.iml
