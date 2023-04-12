@@ -13,6 +13,7 @@ import operator
 import socket
 import threading
 import os
+import gzip
 
 from utils.notifications import sendAppriseNotifications
 from utils.parse_settings import config_to_settings
@@ -396,8 +397,16 @@ def handle_client(conn, addr):
 
                 birdweather_id = args.birdweather_id
 
-                # Read audio data
-                audioData = readAudioData(args.i, args.overlap)
+                # Read audio data & handle errors
+                try:
+                    audioData = readAudioData(args.i, args.overlap)
+
+                except (NameError, TypeError) as e:
+                    print(f"Error with the following info: {e}")
+                    open('~/BirdNET-Pi/analyzing_now.txt', 'w').close()
+
+                finally:
+                    pass
 
                 # Get Date/Time from filename in case Pi gets behind
                 # now = datetime.now()
@@ -551,7 +560,9 @@ def handle_client(conn, addr):
 
                                             with open(args.i, 'rb') as f:
                                                 wav_data = f.read()
-                                            response = requests.post(url=soundscape_url, data=wav_data, headers={'Content-Type': 'application/octet-stream'})
+                                            gzip_wav_data = gzip.compress(wav_data)
+                                            response = requests.post(url=soundscape_url, data=gzip_wav_data, headers={'Content-Type': 'application/octet-stream',
+                                                                                                                      'Content-Encoding': 'gzip'})
                                             print("Soundscape POST Response Status - ", response.status_code)
                                             sdata = response.json()
                                             soundscape_id = sdata['soundscape']['id']
@@ -577,7 +588,7 @@ def handle_client(conn, addr):
                                             post_algorithm = "\"algorithm\": " + "\"2p2\"" + ","
                                         else:
                                             post_algorithm = "\"algorithm\": " + "\"alpha\"" + ","
-                                            
+
                                         post_confidence = "\"confidence\": " + str(entry[1])
                                         post_end = " }"
 
