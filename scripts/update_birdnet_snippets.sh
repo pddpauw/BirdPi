@@ -201,5 +201,18 @@ if [[ "$suntime_installation_status" = "not installed" ]];then
   $HOME/BirdNET-Pi/birdnet/bin/pip3 install suntime
 fi
 
+# For new Advanced Setting Logging level options
+if ! grep LogLevel_BirdnetRecordingService /etc/birdnet/birdnet.conf &>/dev/null;then
+  sudo -u$USER echo "LogLevel_BirdnetRecordingService=\"error\"" >> /etc/birdnet/birdnet.conf
+fi
+
+if ! grep LogLevel_LiveAudioStreamService /etc/birdnet/birdnet.conf &>/dev/null;then
+  sudo -u$USER echo "LogLevel_LiveAudioStreamService=\"error\"" >> /etc/birdnet/birdnet.conf
+fi
+
+if ! grep LogLevel_SpectrogramViewerService /etc/birdnet/birdnet.conf &>/dev/null;then
+  sudo -u$USER echo "LogLevel_SpectrogramViewerService=\"error\"" >> /etc/birdnet/birdnet.conf
+fi
+
 sudo systemctl daemon-reload
 restart_services.sh
