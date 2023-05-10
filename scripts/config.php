@@ -1,7 +1,7 @@
 <?php
-if(file_exists('./scripts/common.php')){
+if (file_exists('./scripts/common.php')) {
 	include_once "./scripts/common.php";
-}else{
+} else {
 	include_once "./common.php";
 }
 
