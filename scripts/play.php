@@ -6,89 +6,40 @@ if(file_exists('./scripts/common.php')){
 }
 
 if(isset($_GET['deletefile'])) {
-  if(isset($_SERVER['PHP_AUTH_USER'])) {
-    $submittedpwd = $_SERVER['PHP_AUTH_PW'];
-    $submitteduser = $_SERVER['PHP_AUTH_USER'];
-    if($submittedpwd == $config['CADDY_PWD'] && $submitteduser == 'birdnet'){
-
-	  $filename_to_delete = $_GET['deletefile'];
-      $message = deleteDetection($filename_to_delete)['message'];
-      echo $message;
-      die();
-
-    } else {
-      header('WWW-Authenticate: Basic realm="My Realm"');
-      header('HTTP/1.0 401 Unauthorized');
-      echo 'You must be authenticated to change the protection of files.';
-      exit;
-    }
-  } else {
-    header('WWW-Authenticate: Basic realm="My Realm"');
-    header('HTTP/1.0 401 Unauthorized');
-    echo 'You must be authenticated to change the protection of files.';
-    exit;
-  }
+	$user_is_authenticated = authenticateUser('You must be authenticated to change the protection of files.');
+	if ($user_is_authenticated) {
+		$filename_to_delete = $_GET['deletefile'];
+		$message = deleteDetection($filename_to_delete)['message'];
+		echo $message;
+		die();
+	}
 }
 
 if(isset($_GET['excludefile'])) {
-  if(isset($_SERVER['PHP_AUTH_USER'])) {
-    $submittedpwd = $_SERVER['PHP_AUTH_PW'];
-    $submitteduser = $_SERVER['PHP_AUTH_USER'];
-    if($submittedpwd == $config['CADDY_PWD'] && $submitteduser == 'birdnet'){
+	$user_is_authenticated = authenticateUser('You must be authenticated to change the protection of files.');
+	if ($user_is_authenticated) {
 
-      if(isset($_GET['exclude_add'])) {
-		  $response_data = protectDetectionFromDeletion('protect', $_GET['excludefile']);
-		  echo $response_data['message'];
-		  die();
-      } else {
-		  $response_data = protectDetectionFromDeletion('unprotect', $_GET['excludefile']);
-		  echo $response_data['message'];
-		  die();
-      }
+		if (isset($_GET['exclude_add'])) {
+			$response_data = protectDetectionFromDeletion('protect', $_GET['excludefile']);
+			echo $response_data['message'];
+			die();
+		} else {
+			$response_data = protectDetectionFromDeletion('unprotect', $_GET['excludefile']);
+			echo $response_data['message'];
+			die();
+		}
 
-    } else {
-      header('WWW-Authenticate: Basic realm="My Realm"');
-      header('HTTP/1.0 401 Unauthorized');
-      echo 'You must be authenticated to change the protection of files.';
-      exit;
-    }
-  } else {
-    header('WWW-Authenticate: Basic realm="My Realm"');
-    header('HTTP/1.0 401 Unauthorized');
-    echo 'You must be authenticated to change the protection of files.';
-    exit;
-  }
+	}
 }
 
 $shifted_path = getDirectory('shifted_dir');
 
 if(isset($_GET['shiftfile'])) {
 
-	if (file_exists('./scripts/thisrun.txt')) {
-		$config = parse_ini_file('./scripts/thisrun.txt');
-	} elseif (file_exists('./scripts/firstrun.ini')) {
-		$config = parse_ini_file('./scripts/firstrun.ini');
-	}
-	$user = shell_exec("awk -F: '/1000/{print $1}' /etc/passwd");
-	$home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
-	$home = trim($home);
-	$caddypwd = $config['CADDY_PWD'];
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header('WWW-Authenticate: Basic realm="My Realm"');
-		header('HTTP/1.0 401 Unauthorized');
-		echo '<table><tr><td>You cannot shift files for this installation</td></tr></table>';
-		exit;
-	} else {
-		$submittedpwd = $_SERVER['PHP_AUTH_PW'];
-		$submitteduser = $_SERVER['PHP_AUTH_USER'];
-		if ($submittedpwd !== $caddypwd || $submitteduser !== 'birdnet') {
-			header('WWW-Authenticate: Basic realm="My Realm"');
-			header('HTTP/1.0 401 Unauthorized');
-			echo '<table><tr><td>You cannot shift files for this installation<</td></tr></table>';
-			exit;
-		}
-	}
+//Authenticate before going any further
+authenticateUser('You cannot shift files for this installation');
 
+//Authenticated if we get this far
 	$filename = $_GET['shiftfile'];
 	$doShift = null;
 	if (isset($_GET['doshift'])) {
@@ -428,11 +379,11 @@ if(isset($_SESSION['date'])) {
 	$result2_data = getSpeciesDetectionInfo($name, null, $confidence);
 }
 
-	if ($result2_data['success'] == False) {
-		echo $result2_data['message'];
-		header("refresh: 0;");
-	}
-	$result2 = $result2_data['data'];
+if ($result2_data['success'] == False) {
+    echo $result2_data['message'];
+    header("refresh: 0;");
+}
+$result2 = $result2_data['data'];
 
 //Count number of records we have
 $num_rows = count($result2);
