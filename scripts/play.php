@@ -101,6 +101,31 @@ $shifted_path = $home."/BirdSongs/Extracted/By_Date/shifted/";
 
 if(isset($_GET['shiftfile'])) {
 
+  if (file_exists('./scripts/thisrun.txt')) {
+  $config = parse_ini_file('./scripts/thisrun.txt');
+} elseif (file_exists('./scripts/firstrun.ini')) {
+  $config = parse_ini_file('./scripts/firstrun.ini');
+}
+$user = shell_exec("awk -F: '/1000/{print $1}' /etc/passwd");
+$home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
+$home = trim($home);
+$caddypwd = $config['CADDY_PWD'];
+if (!isset($_SERVER['PHP_AUTH_USER'])) {
+  header('WWW-Authenticate: Basic realm="My Realm"');
+  header('HTTP/1.0 401 Unauthorized');
+  echo '<table><tr><td>You cannot shift files for this installation</td></tr></table>';
+  exit;
+} else {
+  $submittedpwd = $_SERVER['PHP_AUTH_PW'];
+  $submitteduser = $_SERVER['PHP_AUTH_USER'];
+  if($submittedpwd !== $caddypwd || $submitteduser !== 'birdnet'){
+    header('WWW-Authenticate: Basic realm="My Realm"');
+    header('HTTP/1.0 401 Unauthorized');
+    echo '<table><tr><td>You cannot shift files for this installation<</td></tr></table>';
+    exit;
+  }
+}
+
     $filename = $_GET['shiftfile'];
     $pp = pathinfo($filename);
     $dir = $pp['dirname'];
@@ -112,18 +137,18 @@ if(isset($_GET['shiftfile'])) {
   $freqshift_tool = $config['FREQSHIFT_TOOL'];
 
   if ($freqshift_tool == "ffmpeg") {
-    $cmd = "sudo /usr/bin/nohup /usr/bin/ffmpeg -y -i \"".$pi.$filename."\" -af \"rubberband=pitch=".$config['FREQSHIFT_LO']."/".$config['FREQSHIFT_HI']."\" \"".$shifted_path.$filename."\"";
+    $cmd = "sudo /usr/bin/nohup /usr/bin/ffmpeg -y -i ".escapeshellarg($pi.$filename)." -af \"rubberband=pitch=".$config['FREQSHIFT_LO']."/".$config['FREQSHIFT_HI']."\" ".escapeshellarg($shifted_path.$filename)."";
     shell_exec("sudo mkdir -p ".$shifted_path.$dir." && ".$cmd);
 
   } else if ($freqshift_tool == "sox") {
     //linux.die.net/man/1/sox
     $soxopt = "-q";
     $soxpitch = $config['FREQSHIFT_PITCH'];
-    $cmd = "sudo /usr/bin/nohup /usr/bin/sox \"".$pi.$filename."\" \"".$shifted_path.$filename."\" pitch ".$soxopt." ".$soxpitch;
+    $cmd = "sudo /usr/bin/nohup /usr/bin/sox ".escapeshellarg($pi.$filename)." ".escapeshellarg($shifted_path.$filename)." pitch ".$soxopt." ".$soxpitch;
    shell_exec("sudo mkdir -p ".$shifted_path.$dir." && ".$cmd);
   }
     } else {
-     $cmd = "sudo rm -f " . $shifted_path.$filename;
+     $cmd = "sudo rm -f " . escapeshellarg($shifted_path.$filename);
      shell_exec($cmd);
     }
 
@@ -254,21 +279,31 @@ function toggleShiftFreq(filename, shiftAction, elem) {
         elem.setAttribute("title", "This file has been shifted down in frequency.");
         elem.setAttribute("onclick", elem.getAttribute("onclick").replace("shift","unshift"));
         console.log("shifted freqs of " + filename);
-  video=elem.parentNode.getElementsByTagName("video")[0];
-  video.setAttribute("title", video.getAttribute("title").replace("/By_Date/","/By_Date/shifted/"));
-  source = video.getElementsByTagName("source")[0];
-  source.setAttribute("src", source.getAttribute("src").replace("/By_Date/","/By_Date/shifted/"));
-  video.load();
+          video=elem.parentNode.getElementsByTagName("video");
+          if (video.length > 0) {
+            video[0].setAttribute("title", video[0].getAttribute("title").replace("/By_Date/","/By_Date/shifted/"));
+            source = video[0].getElementsByTagName("source")[0];
+            source.setAttribute("src", source.getAttribute("src").replace("/By_Date/","/By_Date/shifted/"));
+            video[0].load();
+          } else {
+            atag=elem.parentNode.getElementsByTagName("a")[0];
+            atag.setAttribute("href", atag.getAttribute("href").replace("/By_Date/","/By_Date/shifted/"));
+          }
       } else {
         elem.setAttribute("src","images/shift.svg");
         elem.setAttribute("title", "This file is not shifted in frequency.");
         elem.setAttribute("onclick", elem.getAttribute("onclick").replace("unshift","shift"));
         console.log("unshifted freqs of " + filename);
-  video=elem.parentNode.getElementsByTagName("video")[0];
-  video.setAttribute("title", video.getAttribute("title").replace("/By_Date/shifted/","/By_Date/"));
-  source = video.getElementsByTagName("source")[0];
-  source.setAttribute("src", source.getAttribute("src").replace("/By_Date/shifted/","/By_Date/"));
-  video.load();
+          video=elem.parentNode.getElementsByTagName("video");
+          if (video.length > 0) {
+            video[0].setAttribute("title", video[0].getAttribute("title").replace("/By_Date/shifted/","/By_Date/"));
+            source = video[0].getElementsByTagName("source")[0];
+            source.setAttribute("src", source.getAttribute("src").replace("/By_Date/shifted/","/By_Date/"));
+            video[0].load();
+          } else {
+            atag=elem.parentNode.getElementsByTagName("a")[0];
+            atag.setAttribute("href", atag.getAttribute("href").replace("/By_Date/shifted/","/By_Date/"));
+          }
       }
     }
   }
