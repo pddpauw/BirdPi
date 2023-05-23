@@ -203,6 +203,29 @@ if(isset($_GET["latitude"])){
   $contents2 = preg_replace("/APPRISE_ONLY_NOTIFY_SPECIES_NAMES=.*/", "APPRISE_ONLY_NOTIFY_SPECIES_NAMES=\"$only_notify_species_names\"", $contents2);
   $contents2 = preg_replace("/APPRISE_ONLY_NOTIFY_SPECIES_NAMES_2=.*/", "APPRISE_ONLY_NOTIFY_SPECIES_NAMES_2=\"$only_notify_species_names_2\"", $contents2);
 
+  if(isset($_GET["overlap"])) {
+    $overlap = $_GET["overlap"];
+    if(strcmp($overlap,$config['OVERLAP']) !== 0) {
+      $contents = preg_replace("/OVERLAP=.*/", "OVERLAP=$overlap", $contents);
+      $contents2 = preg_replace("/OVERLAP=.*/", "OVERLAP=$overlap", $contents2);
+    }
+  }
+
+  if(isset($_GET["confidence"])) {
+    $confidence = $_GET["confidence"];
+    if(strcmp($confidence,$config['CONFIDENCE']) !== 0) {
+      $contents = preg_replace("/CONFIDENCE=.*/", "CONFIDENCE=$confidence", $contents);
+      $contents2 = preg_replace("/CONFIDENCE=.*/", "CONFIDENCE=$confidence", $contents2);
+    }
+  }
+
+  if(isset($_GET["sensitivity"])) {
+    $sensitivity = $_GET["sensitivity"];
+    if(strcmp($sensitivity,$config['SENSITIVITY']) !== 0) {
+      $contents = preg_replace("/SENSITIVITY=.*/", "SENSITIVITY=$sensitivity", $contents);
+      $contents2 = preg_replace("/SENSITIVITY=.*/", "SENSITIVITY=$sensitivity", $contents2);
+    }
+  }
 
 
   if($site_name != $config["SITE_NAME"]) {
@@ -370,7 +393,19 @@ function sendTestNotification(e) {
           echo "<option value='{$modelName}' $isSelected>$modelName</option>";
         }
       ?>
-      </select>
+      </select> <span onclick="document.getElementById('mhelp').style.display='unset'" style="text-decoration:underline;cursor:pointer">[more info]</span>
+      <div id="mhelp" style='display:none'>
+        <p>
+          <dl>
+          <dt>BirdNET_6K_GLOBAL_MODEL (2020)</dt><br>
+          <dd id="ddnewline">This is the BirdNET-Lite model, with bird sound recognition for more than 6,000 species worldwide. This is the default option and will generally work very for people in most of the world.</dd>
+        <br>
+          <dt>BirdNET_GLOBAL_3K_V2.3_Model_FP16 (2023)</dt><br>
+          <dd id="ddnewline">This is the BirdNET-Analyzer model, a newer work-in-progress project with aims to improve on the BirdNET-Lite model. Currently it only supports about 3,500 species worldwide, meaning for some regions (North America, Europe, Australia) it will usually outperform the BirdNET-Lite model, but for other regions it will be worse.</dd><br>
+          <dt>[ In-depth technical write-up on the models <a target="_blank" href="https://github.com/mcguirepr89/BirdNET-Pi/wiki/BirdNET-Pi:-some-theory-on-classification-&-some-practical-hints">here</a> ]</dt>
+          </dl>  
+        </p>
+      </div>
       <br>
       <span <?php if($config['MODEL'] == "BirdNET_6K_GLOBAL_MODEL") { ?>style="display: none"<?php } ?> id="soft">
       <label for="sf_thresh">Species Occurence Frequency Threshold [0.0005, 0.99]: </label>
@@ -473,14 +508,23 @@ function runProcess() {
 }
 </script>
 
-      <dl>
-      <dt>BirdNET_6K_GLOBAL_MODEL (2020)</dt><br>
-      <dd id="ddnewline">This is the BirdNET-Lite model, with bird sound recognition for more than 6,000 species worldwide. This is the default option and will generally work very for people in most of the world.</dd>
-    <br>
-      <dt>BirdNET_GLOBAL_3K_V2.3_Model_FP16 (2023)</dt><br>
-      <dd id="ddnewline">This is the BirdNET-Analyzer model, a newer work-in-progress project with aims to improve on the BirdNET-Lite model. Currently it only supports about 3,500 species worldwide, meaning for some regions (North America, Europe, Australia) it will usually outperform the BirdNET-Lite model, but for other regions it will be worse.</dd><br>
-      <dt>[ In-depth technical write-up on the models <a target="_blank" href="https://github.com/mcguirepr89/BirdNET-Pi/wiki/BirdNET-Pi:-some-theory-on-classification-&-some-practical-hints">here</a> ]</dt>
-      </dl>
+      
+      <hr>
+      <p>
+        <label for="overlap">Overlap: </label>
+        <input name="overlap" type="number" min="0.0" max="2.9" step="0.1" value="<?php print($config['OVERLAP']);?>" required/><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;Min=0.0, Max=2.9
+      </p>
+      <p>
+        <label for="confidence">Minimum Confidence: </label>
+        <input name="confidence" type="number" min="0.01" max="0.99" step="0.01" value="<?php print($config['CONFIDENCE']);?>" required/><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Min=0.01, Max=0.99
+      </p>
+      <p>
+        <label for="sensitivity">Sigmoid Sensitivity: </label>
+        <input name="sensitivity" type="number" min="0.5" max="1.5" step="0.01" value="<?php print($config['SENSITIVITY']);?>" required/><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;Min=0.5, Max=1.5
+      </p>
       </td></tr></table><br>
 
       <table class="settingstable"><tr><td>
