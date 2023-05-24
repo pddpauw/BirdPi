@@ -26,18 +26,7 @@ if(isset($_GET['submit'])) {
 
   if (isset($_GET["activate_freqshift_in_livestream"])) {
     $activate_freqshift_in_livestream = trim($_GET["activate_freqshift_in_livestream"]);
-
-    //Setting exists already, see if the value changed
-    if (strcmp($activate_freqshift_in_livestream, $config['ACTIVATE_FREQSHIFT_IN_LIVESTREAM']) !== 0) {
-      $contents = preg_replace("/ACTIVATE_FREQSHIFT_IN_LIVESTREAM=.*/", "ACTIVATE_FREQSHIFT_IN_LIVESTREAM=\"$activate_freqshift_in_livestream\"", $contents);
-      $contents2 = preg_replace("/ACTIVATE_FREQSHIFT_IN_LIVESTREAM=.*/", "ACTIVATE_FREQSHIFT_IN_LIVESTREAM=\"$activate_freqshift_in_livestream\"", $contents2);
-      $fh = fopen("/etc/birdnet/birdnet.conf", "w");
-      $fh2 = fopen("./scripts/thisrun.txt", "w");
-      fwrite($fh, $contents);
-      fwrite($fh2, $contents2);
-      sleep(1);
-      exec("sudo systemctl restart livestream.service");
-    }
+	saveSetting('ACTIVATE_FREQSHIFT_IN_LIVESTREAM', $activate_freqshift_in_livestream);
   }
 
   
