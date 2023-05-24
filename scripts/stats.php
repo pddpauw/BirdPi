@@ -1,4 +1,8 @@
 <?php
+/* Prevent XSS input */
+$_GET   = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
+$_POST  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+
 if(file_exists('./scripts/common.php')){
 	include_once "./scripts/common.php";
 }else{

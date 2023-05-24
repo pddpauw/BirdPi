@@ -1,4 +1,8 @@
 <?php
+/* Prevent XSS input */
+$_GET   = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
+$_POST  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+
 if(file_exists('./scripts/common.php')){
 	include_once "./scripts/common.php";
 }else{
@@ -38,7 +42,7 @@ if(isset($_GET['blocation']) ) {
 		$starttime = strtotime("12 AM") + (3600*$i);
         $endtime = date("H:i",$starttime + 3600);
 
-		$statement1 = getDetectionBreakdownByTime($theDate,$starttime,$endtime);
+		$statement1 = getDetectionBreakdownByTime($theDate, $starttime, $endtime);
 		if($statement1['success'] == False){
 			echo $statement1['message'];
 			header("refresh: 0;");
