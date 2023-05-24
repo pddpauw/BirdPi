@@ -229,8 +229,13 @@ if grep -q '^MODEL=BirdNET_GLOBAL_3K_V2.2_Model_FP16$' /etc/birdnet/birdnet.conf
   sudo chmod +x $HOME/BirdNET-Pi/scripts/install_language_label_nm.sh && $HOME/BirdNET-Pi/scripts/install_language_label_nm.sh -l "$language"
 fi
 
-# Symlink the new config directory into the Extracted directory
+# Symlink the new config directory into the Extracted & Local Bin directory
 [ -L ~/BirdSongs/Extracted/config ] || ln -sf ~/BirdNET-Pi/config ~/BirdSongs/Extracted
+[ -L /usr/local/bin/config ] || ln -sf ~/BirdNET-Pi/config /usr/local/bin/
+# Install JSON command line parser - jq
+if ! which jq &>/dev/null;then
+  sudo apt update && sudo apt -y install jq
+fi
 
 
 sudo systemctl daemon-reload
