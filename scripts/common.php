@@ -344,7 +344,7 @@ function getBirdDetectionStats($birdName)
 
 	// Fetch the result set as an associative array
 	$data = array();
-	foreach ($birdDetections as $birdDetection) {
+	foreach ($birdDetections['data'] as $birdDetection) {
 		$data[$birdDetection['Date']] = $birdDetection['Detections'];
 	}
 
