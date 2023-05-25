@@ -1,22 +1,14 @@
 <?php
-error_reporting(E_ERROR);
-ini_set('display_errors',1);
-
-if (file_exists('./scripts/thisrun.txt')) {
-	$config = parse_ini_file('./scripts/thisrun.txt');
-} elseif (file_exists('./scripts/firstrun.ini')) {
-	$config = parse_ini_file('./scripts/firstrun.ini');
+if(file_exists('./scripts/common.php')){
+	include_once "./scripts/common.php";
+}else{
+	include_once "./common.php";
 }
 
 if(isset($_GET['ajax_csv'])) {
 $RECS_DIR = $config["RECS_DIR"];
-
-$user = shell_exec("awk -F: '/1000/{print $1}' /etc/passwd");
-$home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
-$home = trim($home);
-
 //Replace variables to Fix up the file paths just in case the ENV environment variables don't resolve via PHP
-$RECS_DIR = str_replace("\$HOME", $home, $RECS_DIR);
+$RECS_DIR = str_replace("\$HOME", getDirectory('home'), $RECS_DIR);
 $STREAM_DATA_DIR = $RECS_DIR . "/StreamData/";
 
 //Try find the latest file out of the soundcard recording folder
@@ -144,12 +136,7 @@ window.onload = function(){
     document.body.querySelector('h1').remove();
     document.getElementsByClassName("centered")[0].remove()
 
-    <?php 
-    if (file_exists('./scripts/thisrun.txt')) {
-    $config = parse_ini_file('./scripts/thisrun.txt');
-  } elseif (file_exists('./scripts/firstrun.ini')) {
-    $config = parse_ini_file('./scripts/firstrun.ini');
-  }
+    <?php
   $refresh = $config['RECORDING_LENGTH'];
   $time = time();
   ?>
@@ -316,6 +303,46 @@ function toggleCompression(state) {
   }
 }
 
+function toggleFreqshift(state) {
+  if (state == true) {
+    console.log("freqshift activated")
+  } else {
+    console.log("freqshift deactivated")
+  }
+
+  var livestream_freqshift_spinner = document.getElementById('livestream_freqshift_spinner');
+  livestream_freqshift_spinner.style.display = "inline"; 
+  // Create the XMLHttpRequest object.
+  const xhr = new XMLHttpRequest();
+  // Initialize the request
+  xhr.open("GET", './views.php?activate_freqshift_in_livestream=' + state + '&view=Advanced&submit=advanced');
+  // Send the request
+  xhr.send();
+  // Fired once the request completes successfully
+  xhr.onload = function (e) {
+    // Check if the request was a success
+    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+      // Restart the audio player in case it stopped working while the livestream service was restarted
+      var audio_player = document.querySelector('audio#player');
+      if (audio_player !== 'undefined') {
+        //central_controls_element.appendChild(h1_loading);
+        //Wait 2 seconds before restarting the stream
+        setTimeout(function () {
+          console.log("Restarting connection with livestream");
+          audio_player.pause();
+          audio_player.setAttribute('src', '/stream');
+          audio_player.load();
+          audio_player.play();
+
+          livestream_freqshift_spinner.style.display = "none"; 
+        },
+        2000
+        )
+      }
+    }
+  }
+}
+
 function initialize() {
   document.body.querySelector('h1').remove();
   const CVS = document.body.querySelector('canvas');
@@ -354,6 +381,7 @@ function initialize() {
     gainNode.connect(ACTX.destination);
 
     document.getElementById("compression").removeAttribute("disabled");
+    document.getElementById("freqshift").removeAttribute("disabled");
 
     console.log(SOURCE);
     const DATA = new Uint8Array(ANALYSER.frequencyBinCount);
@@ -432,15 +460,7 @@ h1 {
 				//maybe the list of streams has been modified
                 //This isn't the ideal for this, but needed a way to fix this setting without calling the advanced setting page
 				if (array_key_exists($config['RTSP_STREAM_TO_LIVESTREAM'], $RTSP_Stream_Config) === false) {
-					$contents = file_get_contents('/etc/birdnet/birdnet.conf');
-					$contents2 = file_get_contents('./scripts/thisrun.txt');
-					$contents = preg_replace("/RTSP_STREAM_TO_LIVESTREAM=.*/", "RTSP_STREAM_TO_LIVESTREAM=\"0\"", $contents);
-					$contents2 = preg_replace("/RTSP_STREAM_TO_LIVESTREAM=.*/", "RTSP_STREAM_TO_LIVESTREAM=\"0\"", $contents2);
-					$fh = fopen("/etc/birdnet/birdnet.conf", "w");
-					$fh2 = fopen("./scripts/thisrun.txt", "w");
-					fwrite($fh, $contents);
-					fwrite($fh2, $contents2);
-					exec("sudo systemctl restart livestream.service");
+                    saveSetting('RTSP_STREAM_TO_LIVESTREAM',"\"0\"",'restart livestream"');
 				}
 
 				//Print out the dropdown list for the RTSP streams
@@ -470,8 +490,20 @@ h1 {
   </div>
     &mdash;
   <div style="display:inline" id="comp" >
-  <label>Compression: </label>
+    <label>Compression: </label>
     <input name="compression" type="checkbox" id="compression" disabled>
+  </div>
+  <div style="display:inline" id="fshift" >
+    <label>Freq shift: </label>
+    <?php 
+        if ($config['ACTIVATE_FREQSHIFT_IN_LIVESTREAM'] == "true") {
+          $freqshift_state = "checked";
+        } else {
+          $freqshift_state = "";
+        }
+    ?>
+    <input name="freqshift" type="checkbox" id="freqshift" <?php echo($freqshift_state); ?>  disabled>
+    <img id="livestream_freqshift_spinner" src=images/spinner.gif style="height: 25px; vertical-align: top; display: none">
   </div>
 </div>
 
@@ -541,5 +573,10 @@ slider.oninput = function() {
 var compression = document.getElementById("compression");
 compression.onclick = function() {
   toggleCompression(this.checked);
+}
+
+var freqshift = document.getElementById("freqshift");
+freqshift.onclick = function() {
+  toggleFreqshift(this.checked);
 }
 </script>

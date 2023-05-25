@@ -148,6 +148,9 @@ fi
 if ! grep FREQSHIFT_PITCH /etc/birdnet/birdnet.conf &>/dev/null;then
   sudo -u$USER echo "FREQSHIFT_PITCH=-1500" >> /etc/birdnet/birdnet.conf
 fi
+if ! grep ACTIVATE_FREQSHIFT_IN_LIVESTREAM /etc/birdnet/birdnet.conf &>/dev/null;then
+  sudo -u$USER echo "ACTIVATE_FREQSHIFT_IN_LIVESTREAM=\"false\"" >> /etc/birdnet/birdnet.conf
+fi
 if ! grep HEARTBEAT_URL /etc/birdnet/birdnet.conf &>/dev/null;then
   sudo -u$USER echo "HEARTBEAT_URL=" >> /etc/birdnet/birdnet.conf
 fi
@@ -224,6 +227,14 @@ if grep -q '^MODEL=BirdNET_GLOBAL_3K_V2.2_Model_FP16$' /etc/birdnet/birdnet.conf
   sed -i 's/BirdNET_GLOBAL_3K_V2.2_Model_FP16/BirdNET_GLOBAL_3K_V2.3_Model_FP16/' $HOME/BirdNET-Pi/birdnet.conf
   cp -f $HOME/BirdNET-Pi/model/labels.txt $HOME/BirdNET-Pi/model/labels.txt.old
   sudo chmod +x $HOME/BirdNET-Pi/scripts/install_language_label_nm.sh && $HOME/BirdNET-Pi/scripts/install_language_label_nm.sh -l "$language"
+fi
+
+# Symlink the new config directory into the Extracted & Local Bin directory
+[ -L ~/BirdSongs/Extracted/config ] || ln -sf ~/BirdNET-Pi/config ~/BirdSongs/Extracted
+[ -L /usr/local/bin/config ] || ln -sf ~/BirdNET-Pi/config /usr/local/bin/
+# Install JSON command line parser - jq
+if ! which jq &>/dev/null;then
+  sudo apt update && sudo apt -y install jq
 fi
 
 
