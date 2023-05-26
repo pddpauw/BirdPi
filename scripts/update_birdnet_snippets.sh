@@ -248,9 +248,6 @@ if grep -q '^MODEL=BirdNET_GLOBAL_3K_V2.2_Model_FP16$' "$etc_birdnet_conf_path";
   sudo chmod +x "$SCRIPTS_DIR"/install_language_label_nm.sh && "$SCRIPTS_DIR"/install_language_label_nm.sh -l "$language"
 fi
 
-# Link in new bash script common.sh to local/bin
-ln -sf ${SCRIPTS_DIR}/common.sh /usr/local/bin/
-
 # Symlink the new config directory into the Extracted & Local Bin directory
 [ -L ~/BirdSongs/Extracted/config ] || ln -sf ~/BirdNET-Pi/config ~/BirdSongs/Extracted
 [ -L /usr/local/bin/config ] || ln -sf ~/BirdNET-Pi/config /usr/local/bin/
@@ -259,6 +256,9 @@ if ! which jq &>/dev/null;then
   sudo apt update && sudo apt -y install jq
 fi
 
+# Link in new bash script common.sh to local/bin and make sure the config directory is also
+[ -L /usr/local/bin/common.sh ] || ln -sf ${SCRIPTS_DIR}/common.sh /usr/local/bin/
+[ -L /usr/local/bin/config ] || ln -sf ${BIRDNET_PI_DIR}/config /usr/local/bin/
 
 sudo systemctl daemon-reload
 restart_services.sh
