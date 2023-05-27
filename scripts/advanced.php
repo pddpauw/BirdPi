@@ -26,7 +26,7 @@ if(isset($_GET['submit'])) {
 
   if (isset($_GET["activate_freqshift_in_livestream"])) {
     $activate_freqshift_in_livestream = trim($_GET["activate_freqshift_in_livestream"]);
-	saveSetting('ACTIVATE_FREQSHIFT_IN_LIVESTREAM', $activate_freqshift_in_livestream);
+	saveSetting('ACTIVATE_FREQSHIFT_IN_LIVESTREAM', $activate_freqshift_in_livestream, 'restart livestream');
   }
 
   
