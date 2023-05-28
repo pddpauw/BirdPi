@@ -28,15 +28,19 @@ loadFilePathMap() {
   #Loads in the JSON file containing data on directory and file paths
   if [ -z "$filePathMap_data" ]; then
     # Test if jq is installed
+    if ! which jq &>/dev/null; then
+      echo "jq command-line JSON processor is not installed, Install it with; sudo apt-get -y install jq" >&2
+      exit 1
+    fi
     test_json_str=$(echo "{ }" | jq)
     if [ "$test_json_str" != "{}" ]; then
-      echo "jq command-line JSON processor is not installed, Install it with; sudo apt-get install jq"
+      echo "jq command-line JSON processor is not properly installed, Reinstall it with; sudo apt-get -y remove jq && sudo apt-get -y install jq" >&2
       exit 1
     fi
 
     # Test if the path to the JSON file is valud
     if [ ! -f "$filePathMap_json_path" ]; then
-      echo "Specified JSON file $filePathMap_json_path does not exist"
+      echo "Specified JSON file $filePathMap_json_path does not exist" >&2
       exit 2
     fi
 

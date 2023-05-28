@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
+# Update BirdNET-Pi's Git Repo
+source /etc/birdnet/birdnet.conf
+trap 'exit 1' SIGINT SIGHUP
+
 BINDIR=$(cd $(dirname $0) && pwd)
 . ${BINDIR}/common.sh
 
 SCRIPTS_DIR="$(getDirectory 'scripts')"
 BIRDNET_PI_DIR="$(getDirectory 'birdnet_pi')"
 
-# Update BirdNET-Pi's Git Repo
-source /etc/birdnet/birdnet.conf
-trap 'exit 1' SIGINT SIGHUP
 
 usage() { echo "Usage: $0 [-r <remote name>] [-b <branch name>]" 1>&2; exit 1; }
 
