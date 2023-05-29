@@ -1,4 +1,19 @@
 #!/usr/bin/env bash
+# Update BirdNET-Pi
+source /etc/birdnet/birdnet.conf
+trap 'exit 1' SIGINT SIGHUP
+
+# Install JSON command line parser - jq
+if ! which jq &>/dev/null;then
+  sudo apt update && sudo apt -y install jq
+fi
+
+# We need a absolute path to the home path for these specific sym links
+INST_HOME=$(awk -F: '/1000/ {print $6}' /etc/passwd)
+# Link in new bash script common.sh to /usr/local/bin as well as the config dir
+sudo ln -sf "$INST_HOME/BirdNET-Pi/scripts/common.sh" /usr/local/bin/
+sudo ln -sf "$INST_HOME/BirdNET-Pi/config" /usr/local/bin/
+
 BINDIR=$(cd $(dirname $0) && pwd)
 . ${BINDIR}/common.sh
 
@@ -19,23 +34,22 @@ TEMPLATES_DIR="$(getDirectory 'templates')"
 PYTHON3_VE_DIR="$(getDirectory 'python3_ve')"
 WWW_HOMEPAGE_DIR="$(getDirectory 'web')"
 
-# Update BirdNET-Pi
-source /etc/birdnet/birdnet.conf
-trap 'exit 1' SIGINT SIGHUP
 USER=$(awk -F: '/1000/ {print $1}' /etc/passwd)
 HOME=$(awk -F: '/1000/ {print $6}' /etc/passwd)
 
 # Sets proper permissions and ownership
 #sudo -E chown -R $USER:$USER $HOME/*
 #sudo chmod -R g+wr $HOME/*
-find $HOME_DIR/Bird* -type f ! -perm -g+wr -exec chmod g+wr {} + 2>/dev/null
-find $HOME_DIR/Bird* -not -user $USER -execdir sudo -E chown $USER:$USER {} \+
-chmod 666 "$SCRIPTS_DIR"/*.txt
-chmod 666 "$BIRDNET_PI_DIR"/*.txt
-find $BIRDNET_PI_DIR -path "$BIRDNET_PI_DIR/birdnet" -prune -o -type f ! -perm /o=w -exec chmod a+w {} \;
+# For safety, make sure variables holding our directory paths are not empty
+[ -z "$HOME_DIR" ] || find $HOME_DIR/Bird* -type f ! -perm -g+wr -exec chmod g+wr {} + 2>/dev/null
+[ -z "$HOME_DIR" ] || find $HOME_DIR/Bird* -not -user $USER -execdir sudo -E chown $USER:$USER {} \+
+[ -z "$SCRIPTS_DIR" ] || chmod 666 "$SCRIPTS_DIR"/*.txt
+[ -z "$BIRDNET_PI_DIR" ] || chmod 666 "$BIRDNET_PI_DIR"/*.txt
+[ -z "$BIRDNET_PI_DIR" ] || find $BIRDNET_PI_DIR -path "$BIRDNET_PI_DIR/birdnet" -prune -o -type f ! -perm /o=w -exec chmod a+w {} \;
 
+# For safety, make sure $TEMPLATES_DIR is not empty
 # remove world-writable perms
-chmod -R o-w $TEMPLATES_DIR/*
+[ -z "$TEMPLATES_DIR" ] || chmod -R o-w $TEMPLATES_DIR/*
 
 
 # Create blank sitename as it's optional. First time install will use $HOSTNAME.
@@ -249,16 +263,7 @@ if grep -q '^MODEL=BirdNET_GLOBAL_3K_V2.2_Model_FP16$' "$etc_birdnet_conf_path";
 fi
 
 # Symlink the new config directory into the Extracted & Local Bin directory
-[ -L ~/BirdSongs/Extracted/config ] || ln -sf ~/BirdNET-Pi/config ~/BirdSongs/Extracted
-[ -L /usr/local/bin/config ] || ln -sf ~/BirdNET-Pi/config /usr/local/bin/
-# Install JSON command line parser - jq
-if ! which jq &>/dev/null;then
-  sudo apt update && sudo apt -y install jq
-fi
-
-# Link in new bash script common.sh to local/bin and make sure the config directory is also
-[ -L /usr/local/bin/common.sh ] || ln -sf ${SCRIPTS_DIR}/common.sh /usr/local/bin/
-[ -L /usr/local/bin/config ] || ln -sf ${BIRDNET_PI_DIR}/config /usr/local/bin/
+[ -L "$EXTRACTED_DIR/config" ] || ln -sf "$BIRDNET_PI_DIR/config" "$EXTRACTED_DIR"
 
 sudo systemctl daemon-reload
 restart_services.sh
