@@ -263,7 +263,7 @@ if grep -q '^MODEL=BirdNET_GLOBAL_3K_V2.2_Model_FP16$' "$etc_birdnet_conf_path";
 fi
 
 # Symlink the new config directory into the Extracted & Local Bin directory
-[ -L ~/BirdSongs/Extracted/config ] || ln -sf ~/BirdNET-Pi/config ~/BirdSongs/Extracted
+[ -L "$EXTRACTED_DIR/config" ] || ln -sf "$BIRDNET_PI_DIR/config" "$EXTRACTED_DIR"
 
 sudo systemctl daemon-reload
 restart_services.sh
