@@ -19,14 +19,15 @@ ERROR_ENCOUNTERED="false"
 
 #Initialize to expected home location
 HOME="/home/pi"
+INST_HOME=$(awk -F: '/1000/ {print $6}' /etc/passwd)
 
 #Test over varying home folders
 TEST_HOMES=('/home/pi' '/home/another_user' '/opt/birdnet')
 
 # Test if the required symbolic links are in place
 echo "Testing symbolic links required by services exists..."
-[ -L /usr/local/bin/common.sh ] && [ -a /usr/local/bin/common.sh ]  || { echo "WARNING!! required symbolic link --> /usr/local/bin/common.sh does not exist; create it with 'sudo ln -sf ~/BirdNET-Pi/scripts/common.sh /usr/local/bin/'"; ERROR_ENCOUNTERED="true"; }
-[ -L /usr/local/bin/config ] && [ -a /usr/local/bin/config ] || { echo "WARNING!! required symbolic link --> /usr/local/bin/config does not exist; create it with 'sudo ln -sf ~/BirdNET-Pi/config /usr/local/bin/'"; ERROR_ENCOUNTERED="true"; }
+[ -L /usr/local/bin/common.sh ] && [ -a /usr/local/bin/common.sh ]  || { echo "WARNING!! required symbolic link --> /usr/local/bin/common.sh does not exist; create it with 'sudo ln -sf $INST_HOME/BirdNET-Pi/scripts/common.sh /usr/local/bin/'"; ERROR_ENCOUNTERED="true"; }
+[ -L /usr/local/bin/config ] && [ -a /usr/local/bin/config ] || { echo "WARNING!! required symbolic link --> /usr/local/bin/config does not exist; create it with 'sudo ln -sf $INST_HOME/BirdNET-Pi/config /usr/local/bin/'"; ERROR_ENCOUNTERED="true"; }
 if [ $ERROR_ENCOUNTERED == "false" ]; then
   echo "Symbolic link check completed successfully."
 else
