@@ -184,6 +184,9 @@ fi
 if ! grep ACTIVATE_FREQSHIFT_IN_LIVESTREAM "$etc_birdnet_conf_path" &>/dev/null;then
   sudo -u$USER echo "ACTIVATE_FREQSHIFT_IN_LIVESTREAM=\"false\"" >> "$etc_birdnet_conf_path"
 fi
+if ! grep FREQSHIFT_RECONNECT_DELAY /etc/birdnet/birdnet.conf &>/dev/null;then
+  sudo -u$USER echo "FREQSHIFT_RECONNECT_DELAY=4000" >> /etc/birdnet/birdnet.conf
+fi
 if ! grep HEARTBEAT_URL "$etc_birdnet_conf_path" &>/dev/null;then
   sudo -u$USER echo "HEARTBEAT_URL=" >> "$etc_birdnet_conf_path"
 fi

@@ -78,7 +78,7 @@ if(isset($_GET["latitude"])){
     echo "<script>setTimeout(
     function() {
       const xhttp = new XMLHttpRequest();
-    xhttp.open(\"GET\", \"./views.php?view=Settings&restart_php=true&hidehtml=true\", true);
+    xhttp.open(\"GET\", \"./config.php?restart_php=true\", true);
     xhttp.send();
     }, 1000);</script>";
   }
@@ -178,6 +178,7 @@ if(isset($_GET['sendtest']) && $_GET['sendtest'] == "true") {
 
   $title = str_replace("\$sciname", $sciname, $title);
   $title = str_replace("\$comname", $comname, $title);
+  $title = str_replace("\$confidencepct", round($confidence*100), $title);
   $title = str_replace("\$confidence", $confidence, $title);
   $title = str_replace("\$listenurl", $filename, $title);
   $title = str_replace("\$date", $date, $title);
@@ -192,6 +193,7 @@ if(isset($_GET['sendtest']) && $_GET['sendtest'] == "true") {
 
   $body = str_replace("\$sciname", $sciname, $body);
   $body = str_replace("\$comname", $comname, $body);
+  $body = str_replace("\$confidencepct", round($confidence*100), $body);
   $body = str_replace("\$confidence", $confidence, $body);
   $body = str_replace("\$listenurl", $filename, $body);
   $body = str_replace("\$date", $date, $body);
@@ -204,11 +206,13 @@ if(isset($_GET['sendtest']) && $_GET['sendtest'] == "true") {
   $body = str_replace("\$overlap", $overlap, $body);
   $body = str_replace("\$flickrimage", $exampleimage, $body);
 
-	echo "<pre class=\"bash\">" . executeSysCommand('appraise_notification', ['title' => $title, 'body' => $body, 'attach' => $attach, 'cf' => $cf]) . "</pre>";
+  echo "<pre class=\"bash\">" . executeSysCommand('appraise_notification', ['title' => $title, 'body' => $body, 'attach' => $attach, 'cf' => $cf]) . "</pre>";
 
   die();
 }
 
+//Parse the ini files to get the current config
+parseConfig();
 ?>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
@@ -243,7 +247,7 @@ function sendTestNotification(e) {
             e.classList.remove("disabled");
         }
     }
-    xmlHttp.open("GET", "views.php?view=Settings&hidehtml=true&sendtest=true&apprise_notification_title="+apprise_notification_title+"&apprise_notification_body="+apprise_notification_body+"&apprise_config="+apprise_config, true); // true for asynchronous
+    xmlHttp.open("GET", "scripts/config.php?sendtest=true&apprise_notification_title="+apprise_notification_title+"&apprise_notification_body="+apprise_notification_body+"&apprise_config="+apprise_config, true); // true for asynchronous
     xmlHttp.send(null);
 }
 </script>
@@ -360,7 +364,7 @@ function runProcess() {
       output.innerHTML = xhr.responseText;
     }
   };
-  xhr.open('GET', `views.php?view=Settings&threshold=${threshold}&hidehtml=true`);
+  xhr.open('GET', `scripts/config.php?threshold=${threshold}`);
   xhr.send();
 }
 </script>
@@ -389,7 +393,7 @@ function runProcess() {
       <h2>BirdWeather</h2>
       <label for="birdweather_id">BirdWeather ID: </label>
       <input name="birdweather_id" type="text" value="<?php print($config['BIRDWEATHER_ID']);?>" /><br>
-      <p><a href="https://app.birdweather.com" target="_blank">BirdWeather.com</a> is a weather map for bird sounds. Stations around the world supply audio and video streams to BirdWeather where they are then analyzed by BirdNET and compared to eBird Grid data. BirdWeather catalogues the bird audio and spectrogram visualizations so that you can listen to, view, and read about birds throughout the world. <a href="mailto:tim@birdweather.com?subject=Request%20BirdWeather%20ID&body=<?php include('./scripts/birdweather_request.php'); ?>" target="_blank">Email Tim</a> to request a BirdWeather ID</p>
+      <p><a href="https://app.birdweather.com" target="_blank">BirdWeather.com</a> is a weather map for bird sounds. Stations around the world supply audio and video streams to BirdWeather where they are then analyzed by BirdNET and compared to eBird Grid data. BirdWeather catalogues the bird audio and spectrogram visualizations so that you can listen to, view, and read about birds throughout the world. <a href="mailto:tim@birdweather.com?subject=Request%20BirdWeather%20ID&body=<?php include(getDirectory('scripts') . '/birdweather_request.php'); ?>" target="_blank">Email Tim</a> to request a BirdWeather ID</p>
       </td></tr></table><br>
       <table class="settingstable" style="width:100%"><tr><td>
       <h2>Notifications</h2>
@@ -407,6 +411,8 @@ https://discordapp.com/api/webhooks/{WebhookID}/{WebhookToken}
       <dd>Common Name</dd>
       <dt>$confidence</dt>
       <dd>Confidence Score</dd>
+      <dt>$confidencepct</dt>
+      <dd>Confidence Score as a percentage (eg. 0.91 => 91)</dd>
       <dt>$listenurl</dt>
       <dd>A link to the detection</dd>
       <dt>$date</dt>
@@ -430,9 +436,9 @@ https://discordapp.com/api/webhooks/{WebhookID}/{WebhookToken}
       </dl>
       <p>Use the variables defined above to customize your notification title and body.</p>
       <label for="apprise_notification_title">Notification Title: </label>
-      <input name="apprise_notification_title" type="text" value="<?php print($config['APPRISE_NOTIFICATION_TITLE']);?>" /><br>
+      <input name="apprise_notification_title" style="width: 100%" type="text" value="<?php print($config['APPRISE_NOTIFICATION_TITLE']);?>" /><br>
       <label for="apprise_notification_body">Notification Body: </label>
-      <input name="apprise_notification_body" type="text" value='<?php print($config['APPRISE_NOTIFICATION_BODY']);?>' /><br>
+      <input name="apprise_notification_body" style="width: 100%" type="text" value='<?php print($config['APPRISE_NOTIFICATION_BODY']);?>' /><br>
       <input type="checkbox" name="apprise_notify_new_species" <?php if($config['APPRISE_NOTIFY_NEW_SPECIES'] == 1 && filesize(getFilePath('apprise.txt')) != 0) { echo "checked"; };?> >
       <label for="apprise_notify_new_species">Notify each new infrequent species detection (<5 visits per week)</label><br>
       <input type="checkbox" name="apprise_notify_new_species_each_day" <?php if($config['APPRISE_NOTIFY_NEW_SPECIES_EACH_DAY'] == 1 && filesize(getFilePath('apprise.txt')) != 0) { echo "checked"; };?> >

@@ -1,4 +1,5 @@
 <?php
+
 /* Prevent XSS input */
 $_GET   = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
 $_POST  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -11,15 +12,16 @@ if(file_exists('./scripts/common.php')){
 
 session_start();
 
-if(!isset($_SESSION['behind'])) {
-   $_SESSION['behind'] = getGitStatus();
-  if(isset($_SESSION['behind'])&&intval($_SESSION['behind']) >= 99) {?>
+if (!isset($_SESSION['behind'])) {
+	$_SESSION['behind'] = getGitStatus();
+}
+if (isset($_SESSION['behind']) && intval($_SESSION['behind']) >= 99) { ?>
   <style>
-  .updatenumber { 
+  .updatenumber {
     width:30px !important;
   }
   </style>
-<?php }}
+<?php }
 
 parseConfig();
 
@@ -33,7 +35,6 @@ elseif ($config["LONGITUDE"] == "0.000") {
   echo "<center style='color:red'><b>WARNING: Your longitude is not set properly. Please do so now in Tools -> Settings.</center></b>";
 }
 ?>
-<?php if(!isset($_GET['hidehtml'])){?>
 <link rel="stylesheet" href="style.css?v=<?php echo date ('n.d.y', filemtime('style.css')); ?>">
 <style>
 body::-webkit-scrollbar {
@@ -106,7 +107,7 @@ function copyOutput(elem) {
   document.execCommand("copy");
 }
 </script>
-<?php } //hidehtml ?>
+
 <div class="views">
 <?php
 if(isset($_GET['view'])){
@@ -390,4 +391,3 @@ window.onbeforeunload = function(event) {
 </script>
 </div>
 </body>
-
