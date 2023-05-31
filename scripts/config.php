@@ -178,6 +178,7 @@ if(isset($_GET['sendtest']) && $_GET['sendtest'] == "true") {
 
   $title = str_replace("\$sciname", $sciname, $title);
   $title = str_replace("\$comname", $comname, $title);
+  $title = str_replace("\$confidencepct", round($confidence*100), $title);
   $title = str_replace("\$confidence", $confidence, $title);
   $title = str_replace("\$listenurl", $filename, $title);
   $title = str_replace("\$date", $date, $title);
@@ -192,6 +193,7 @@ if(isset($_GET['sendtest']) && $_GET['sendtest'] == "true") {
 
   $body = str_replace("\$sciname", $sciname, $body);
   $body = str_replace("\$comname", $comname, $body);
+  $body = str_replace("\$confidencepct", round($confidence*100), $body);
   $body = str_replace("\$confidence", $confidence, $body);
   $body = str_replace("\$listenurl", $filename, $body);
   $body = str_replace("\$date", $date, $body);
@@ -204,7 +206,7 @@ if(isset($_GET['sendtest']) && $_GET['sendtest'] == "true") {
   $body = str_replace("\$overlap", $overlap, $body);
   $body = str_replace("\$flickrimage", $exampleimage, $body);
 
-	echo "<pre class=\"bash\">" . executeSysCommand('appraise_notification', ['title' => $title, 'body' => $body, 'attach' => $attach, 'cf' => $cf]) . "</pre>";
+  echo "<pre class=\"bash\">" . executeSysCommand('appraise_notification', ['title' => $title, 'body' => $body, 'attach' => $attach, 'cf' => $cf]) . "</pre>";
 
   die();
 }
@@ -409,6 +411,8 @@ https://discordapp.com/api/webhooks/{WebhookID}/{WebhookToken}
       <dd>Common Name</dd>
       <dt>$confidence</dt>
       <dd>Confidence Score</dd>
+      <dt>$confidencepct</dt>
+      <dd>Confidence Score as a percentage (eg. 0.91 => 91)</dd>
       <dt>$listenurl</dt>
       <dd>A link to the detection</dd>
       <dt>$date</dt>
@@ -432,9 +436,9 @@ https://discordapp.com/api/webhooks/{WebhookID}/{WebhookToken}
       </dl>
       <p>Use the variables defined above to customize your notification title and body.</p>
       <label for="apprise_notification_title">Notification Title: </label>
-      <input name="apprise_notification_title" type="text" value="<?php print($config['APPRISE_NOTIFICATION_TITLE']);?>" /><br>
+      <input name="apprise_notification_title" style="width: 100%" type="text" value="<?php print($config['APPRISE_NOTIFICATION_TITLE']);?>" /><br>
       <label for="apprise_notification_body">Notification Body: </label>
-      <input name="apprise_notification_body" type="text" value='<?php print($config['APPRISE_NOTIFICATION_BODY']);?>' /><br>
+      <input name="apprise_notification_body" style="width: 100%" type="text" value='<?php print($config['APPRISE_NOTIFICATION_BODY']);?>' /><br>
       <input type="checkbox" name="apprise_notify_new_species" <?php if($config['APPRISE_NOTIFY_NEW_SPECIES'] == 1 && filesize(getFilePath('apprise.txt')) != 0) { echo "checked"; };?> >
       <label for="apprise_notify_new_species">Notify each new infrequent species detection (<5 visits per week)</label><br>
       <input type="checkbox" name="apprise_notify_new_species_each_day" <?php if($config['APPRISE_NOTIFY_NEW_SPECIES_EACH_DAY'] == 1 && filesize(getFilePath('apprise.txt')) != 0) { echo "checked"; };?> >
