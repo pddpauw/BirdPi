@@ -43,7 +43,7 @@ now = datetime.now()
 df_plt_today = df_plt[df_plt['Date'] == now.strftime("%Y-%m-%d")]
 
 # Set number of species to report
-readings = 10
+readings = 50
 
 plt_top10_today = (df_plt_today['Com_Name'].value_counts()[:readings])
 df_plt_top10_today = df_plt_today[df_plt_today.Com_Name.isin(plt_top10_today.index)]
@@ -128,7 +128,7 @@ plot.set(ylabel=None)
 plot.set(xlabel="Hour of Day")
 # Set combined plot layout and titles
 f.subplots_adjust(top=0.9)
-plt.suptitle("Top 10 Last Updated: " + str(now.strftime("%Y-%m-%d %H:%M")))
+plt.suptitle("Top 50 observations today, last update: " + str(now.strftime("%Y-%m-%d %H:%M")))
 
 # Save combined plot
 userDir = os.path.expanduser('~')
