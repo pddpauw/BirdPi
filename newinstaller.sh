@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#test for Pi5 version
 
 if [ "$EUID" == 0 ]
   then echo "Please run as a non-root user."
@@ -33,7 +34,7 @@ if [[ ! -z $PACKAGES_MISSING ]] ; then
 fi
 
 branch=main
-git clone -b $branch --depth=1 https://github.com/mcguirepr89/BirdNET-Pi.git ${HOME}/BirdNET-Pi &&
+git clone -b $branch --depth=1 https://github.com/pddpauw/BirdPi.git ${HOME}/BirdNET-Pi &&
 
 $HOME/BirdNET-Pi/scripts/install_birdnet.sh
 if [ ${PIPESTATUS[0]} -eq 0 ];then
