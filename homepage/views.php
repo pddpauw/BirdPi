@@ -261,7 +261,8 @@ if(isset($_GET['view'])){
       $submitteduser = $_SERVER['PHP_AUTH_USER'];
       if($submittedpwd == $caddypwd && $submitteduser == 'birdnet'){
         #ACCESS THE WEB TERMINAL
-        echo "<iframe src='/terminal'></iframe>";
+        #echo "<iframe src='/terminal'></iframe>";
+	echo '<table><tr><td>No Access</td></tr></table>';
       } else {
         header('WWW-Authenticate: Basic realm="My Realm"');
         header('HTTP/1.0 401 Unauthorized');
