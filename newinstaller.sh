@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#test for Pi5 version
+# test for Pi5 version
 
 if [ "$EUID" == 0 ]
   then echo "Please run as a non-root user."
