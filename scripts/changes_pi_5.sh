@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Execute the necessary changes for difference in set up on the Pi5 (bookworm):
+set -x
 
 # Turn off Apache2 
 sudo systemctl disable apache2 && sudo systemctl stop apache2
