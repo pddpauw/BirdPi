@@ -8,7 +8,7 @@ Intent of this repository is to have a working installation script for the Pi5 r
 > [!IMPORTANT]
 > Ensure you have installed the 64bit LITE Bookworm OS on your raspberry Pi5.
 
-to install, run the following script:
+to install, run the following script (can easily take 20-30 mins):
 ```
 curl -s https://raw.githubusercontent.com/pddpauw/BirdPi/main/newinstaller.sh| bash
 ```
