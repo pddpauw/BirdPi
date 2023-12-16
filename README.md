@@ -18,3 +18,16 @@ following changes have been implemented on the original repository from mcguirep
 2) disable Apache (which get installed)
 3) enable Caddy as systemd service
 4) change permission in /home/ to make this work
+
+> [!TIP]
+> Changing your IP to a static IP can be done like this in Bookworm:
+```
+nmcli con show
+```
+select the device you wish to change, and then (change the IP addresses, depending on your local LAN and DHCP settings):
+```
+sudo nmcli con mod "Wired connection 1" ipv4.method manual ipv4.addr 192.168.15.56/24
+sudo nmcli con mod "Wired connection 1" ipv4.gateway 192.168.15.1
+sudo nmcli con mod "Wired connection 1" ipv4.dns "8.8.8.8"
+sudo nmcli con up "Wired connection 1"
+```
