@@ -15,4 +15,6 @@ curl -s https://raw.githubusercontent.com/pddpauw/BirdPi/main/newinstaller.sh| b
 
 following changes have been implemented on the original repository from mcguirepr89:
 1) right verions of php in the CaddyFile (current version is 8.2)
-2) xxx
+2) disable Apache (which get installed)
+3) enable Caddy as systemd service
+4) change permission in /home/ to make this work
