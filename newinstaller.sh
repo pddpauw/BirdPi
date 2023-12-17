@@ -39,6 +39,7 @@ git clone -b $branch --depth=1 https://github.com/pddpauw/BirdPi.git ${HOME}/Bir
 $HOME/BirdNET-Pi/scripts/install_birdnet.sh
 sudo chmod +x $HOME/BirdNET-Pi/scripts/changes_pi_5.sh
 sudo chmod 755 $HOME/
+sudo chmod 777 $HOME/BirdSongs/
 $HOME/BirdNET-Pi/scripts/changes_pi_5.sh
 if [ ${PIPESTATUS[0]} -eq 0 ];then
   echo "Installation completed successfully"
