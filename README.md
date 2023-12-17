@@ -1,4 +1,4 @@
-**this repository is a copy of: https://github.com/mcguirepr89/BirdNET-Pi/**
+**this repository is a copy of: https://github.com/mcguirepr89/BirdNET-Pi/**  
 please use this original repo for install instructions etc... All is very wel described there.
 
 > [!CAUTION]
