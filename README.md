@@ -27,7 +27,7 @@ following changes have been implemented on the original repository from mcguirep
 ```
 nmcli con show
 ```
-select the device you wish to change, and then (change the IP addresses, depending on your local LAN and DHCP settings):
+> select the device you wish to change, and then (change the IP addresses, depending on your local LAN and DHCP settings):
 ```
 sudo nmcli con mod "Wired connection 1" ipv4.method manual ipv4.addr 192.168.15.56/24
 sudo nmcli con mod "Wired connection 1" ipv4.gateway 192.168.15.1
