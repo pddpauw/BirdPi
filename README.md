@@ -26,7 +26,7 @@ following changes have been implemented on the original repository from mcguirep
 
 
 
-# Changin IP address in Bookworm
+# Changing IP address in Bookworm
 ```
 nmcli con show
 ```
