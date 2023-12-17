@@ -1,4 +1,5 @@
 **this repository is a copy of: https://github.com/mcguirepr89/BirdNET-Pi/**
+please use this original repo for install instructions etc... All is very wel described there.
 
 > [!CAUTION]
 > rights linked to the original repository also apply to this one
