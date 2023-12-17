@@ -20,6 +20,8 @@ following changes have been implemented on the original repository from mcguirep
 4) change permission in /home/pi/ to make this work (chmod 755 to this folder)
 5) change in the requirement.txt file to tflite_runtime-2.14.0-cp311-cp311-manylinux_2_34_armv7l.whl
 
+
+
 > [!TIP]
 > Changing your IP to a static IP can be done like this in Bookworm:
 ```
