@@ -1,3 +1,5 @@
+# Intro
+
 **this repository is a copy of: https://github.com/mcguirepr89/BirdNET-Pi/**  
 please use this original repo for install instructions etc... All is very wel described there.
 
@@ -14,6 +16,7 @@ to install, run the following script (can easily take 20-30 mins):
 curl -s https://raw.githubusercontent.com/pddpauw/BirdPi/main/newinstaller.sh| bash
 ```
 
+# Changes vs original repository
 following changes have been implemented on the original repository from mcguirepr89:
 1) right verions of php in the CaddyFile (current version is 8.2)
 2) disable Apache (which gets installed)
@@ -23,8 +26,7 @@ following changes have been implemented on the original repository from mcguirep
 
 
 
-> [!TIP]
-> Changing your IP to a static IP can be done like this in Bookworm:
+# Changin IP address in Bookworm
 ```
 nmcli con show
 ```
