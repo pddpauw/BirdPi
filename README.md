@@ -16,9 +16,9 @@ curl -s https://raw.githubusercontent.com/pddpauw/BirdPi/main/newinstaller.sh| b
 
 following changes have been implemented on the original repository from mcguirepr89:
 1) right verions of php in the CaddyFile (current version is 8.2)
-2) disable Apache (which get installed)
+2) disable Apache (which gets installed)
 3) enable Caddy as systemd service
-4) change permission in /home/pi/ to make this work (chmod 755 to this folder)
+4) change permission in /home/pi/ to make this work (chmod 755 to this folder) - note that this is not ideal.  Preferably, we move all www data to /var/www/.  It works, but can be optimized.
 5) change in the requirement.txt file to tflite_runtime-2.14.0-cp311-cp311-manylinux_2_34_armv7l.whl
 
 
