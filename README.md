@@ -3,7 +3,7 @@
 > [!CAUTION]
 > rights linked to the original repository also apply to this one
 
-Intent of this repository is to have a working installation script for the Pi5 running Bookworm.
+Intent of this repository is to have a working installation script for the Pi5 running Bookworm.  Preferably and ideally, those changes get included in the original repo.
 
 > [!IMPORTANT]
 > Ensure you have installed the 64bit LITE Bookworm OS on your raspberry Pi5.
@@ -17,7 +17,8 @@ following changes have been implemented on the original repository from mcguirep
 1) right verions of php in the CaddyFile (current version is 8.2)
 2) disable Apache (which get installed)
 3) enable Caddy as systemd service
-4) change permission in /home/ to make this work
+4) change permission in /home/pi/ to make this work (chmod 755 to this folder)
+5) change in the requirement.txt file to tflite_runtime-2.14.0-cp311-cp311-manylinux_2_34_armv7l.whl
 
 > [!TIP]
 > Changing your IP to a static IP can be done like this in Bookworm:
