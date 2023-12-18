@@ -23,6 +23,7 @@ following changes have been implemented on the original repository from mcguirep
 3) enable Caddy as systemd service
 4) change permission in /home/pi/ to make this work (chmod 755 to this folder) - note that this is not ideal.  Preferably, we move all www data to /var/www/.  It works, but can be optimized.
 5) change in the requirement.txt file to tflite_runtime-2.14.0-cp311-cp311-manylinux_2_34_armv7l.whl
+6) refresh the database in the script plotly_streamlit.py (st.cache_resource.clear())
 
 
 
