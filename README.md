@@ -24,8 +24,7 @@ following changes have been implemented on the original repository from mcguirep
 4) change permission in /home/pi/ to make this work (chmod 755 to this folder) - note that this is not ideal.  Preferably, we move all www data to /var/www/.  It works, but can be optimized.
 5) change in the requirement.txt file to tflite_runtime-2.14.0-cp311-cp311-manylinux_2_34_armv7l.whl
 6) refresh the database in the script plotly_streamlit.py (st.cache_resource.clear())
-
-
+7) disable the terminal from the webpage _Importantly, I've also disactivated the terminal screen in the webpage for security reasons.  If you wish to enable this, then feel free to adapt in views.php in your homepage/ folder (after installation), and uncomment line 264, and comment line 265_
 
 # Changing IP address in Bookworm
 network settings in Bookworm are managed via nmcli
