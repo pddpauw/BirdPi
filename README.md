@@ -1,6 +1,6 @@
 # Intro
 
-**this repository is a copy of: https://github.com/mcguirepr89/BirdNET-Pi/**  and is updated for installation on Raspberry 5 (Bookworm) and additional updates as described below.
+**this repository is a copy of: https://github.com/mcguirepr89/BirdNET-Pi/**  and is updated for installation on Raspberry 5 (Bookworm) and has some additional updates as described below.
 please use this original repo for install instructions etc... All is very wel described there.
 
 > [!CAUTION]
