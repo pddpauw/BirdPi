@@ -4,7 +4,7 @@
 please use this original repo for install instructions etc... All is very wel described there.
 
 > [!CAUTION]
-> rights linked to the original repository also apply to this one: you may not use BirdNET-Pi to develop a commercial product!  Review the licenc here: https://github.com/mcguirepr89/BirdNET-Pi/blob/main/LICENSE
+> rights linked to the original repository also apply to this one: you may not use BirdNET-Pi to develop a commercial product!  Review the license here: https://github.com/mcguirepr89/BirdNET-Pi/blob/main/LICENSE
 
 Intent of this repository is to have a working installation script for the Pi5 running Bookworm.  Preferably and ideally, those changes get included in the original repo.
 
