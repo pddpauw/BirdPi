@@ -76,7 +76,8 @@ plot = sns.countplot(y='Com_Name', data=df_plt_top10_today, palette=colors, orde
 
 # Try plot grid lines between bars - problem at the moment plots grid lines on bars - want between bars
 z = plot.get_ymajorticklabels()
-plot.set_yticklabels(['\n'.join(textwrap.wrap(ticklabel.get_text(), 15)) for ticklabel in plot.get_yticklabels()], fontsize=10)
+# plot.set_yticklabels(['\n'.join(textwrap.wrap(ticklabel.get_text(), 15)) for ticklabel in plot.get_yticklabels()], fontsize=10)
+plot.set_yticklabels(['\n'.join(textwrap.wrap(ticklabel.get_text(), 30)) for ticklabel in plot.get_yticklabels()], fontsize=8)
 plot.set(ylabel=None)
 plot.set(xlabel="Detections")
 
