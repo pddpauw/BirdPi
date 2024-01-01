@@ -25,6 +25,7 @@ following changes have been implemented on the original repository from mcguirep
 5) change in the requirement.txt file to tflite_runtime-2.14.0-cp311-cp311-manylinux_2_34_armv7l.whl
 6) refresh the database in the script plotly_streamlit.py (st.cache_resource.clear())
 7) disable the terminal from the webpage _Importantly, if you wish to enable this, then feel free to adapt in views.php in your homepage/ folder (after installation), and uncomment line 264, and comment line 265_
+8) change table in homepage to 50 species (change # readings in daily_plot.py (line 46))
 
 # Changing IP address in Bookworm
 network settings in Bookworm are managed via nmcli
