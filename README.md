@@ -16,6 +16,8 @@ to install, run the following script (can easily take 20-30 mins):
 curl -s https://raw.githubusercontent.com/pddpauw/BirdPi/main/newinstaller.sh| bash
 ```
 
+A live version can be found here: http://studiomondo.myqnapcloud.com:82/
+
 # Changes vs original repository
 following changes have been implemented on the original repository from mcguirepr89:
 1) right verions of php in the CaddyFile (current version is 8.2)
@@ -27,7 +29,6 @@ following changes have been implemented on the original repository from mcguirep
 7) disable the terminal from the webpage _Importantly, if you wish to enable this, then feel free to adapt in views.php in your homepage/ folder (after installation), and uncomment line 264, and comment line 265_
 8) change table in homepage to 50 species (change # readings in daily_plot.py (line 46))
 
-a live version can be found here: http://studiomondo.myqnapcloud.com:82/
 # Changing IP address in Bookworm
 network settings in Bookworm are managed via nmcli
 ```
