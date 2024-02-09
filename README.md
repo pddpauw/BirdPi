@@ -16,6 +16,9 @@ to install, run the following script (can easily take 20-30 mins):
 curl -s https://raw.githubusercontent.com/pddpauw/BirdPi/main/newinstaller.sh| bash
 ```
 
+> [!IMPORTANT]
+after installation, set the model to V2.4 in your webbrowser.  It was reported that the as default, the system takes the 6K Global which can result in errors (this still needs to be corrected in the code)
+
 A live version can be found here: http://studiomondo.myqnapcloud.com:82/
 
 # Changes vs original repository
