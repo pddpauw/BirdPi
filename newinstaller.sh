@@ -40,6 +40,7 @@ $HOME/BirdNET-Pi/scripts/install_birdnet.sh
 sudo chmod +x $HOME/BirdNET-Pi/scripts/changes_pi_5.sh
 sudo chmod 755 $HOME/
 sudo chmod 777 $HOME/BirdSongs/
+sudo touch $HOME/BirdNET-Pi/scripts/blacklisted_images.txt
 $HOME/BirdNET-Pi/scripts/changes_pi_5.sh
 if [ ${PIPESTATUS[0]} -eq 0 ];then
   echo "Installation completed successfully"
