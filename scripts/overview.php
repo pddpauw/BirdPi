@@ -440,7 +440,7 @@ window.setInterval(function(){
     }
   } else{
     // image or audio didn't load for some reason, force a refresh in 5 seconds
-    loadDetectionIfNewExists();
+    // loadDetectionIfNewExists(); // REMOVE comment in front of this line if you want to refresh your graphs or tables every 5 seconds.  Too limit bandwith for 4G usage, I have disabled this 
   }
 }, <?php echo intval($dividedrefresh); ?>*1000);
 
