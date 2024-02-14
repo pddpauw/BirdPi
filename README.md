@@ -32,8 +32,6 @@ following changes have been implemented on the original repository from mcguirep
 7) disable the terminal from the webpage _Importantly, if you wish to enable this, then feel free to adapt in views.php in your homepage/ folder (after installation), and uncomment line 264, and comment line 265_
 8) change table in homepage to 50 species (change # readings in daily_plot.py (line 46)) AND optimize layout for the table
 
-10) use V2.4 Model V2
-
 # Optimize for environment to limit data transfer
 the php pages send updates (e.g. spectrogram, overview table) which consumes a considerable amount of data.  For mobile connections, this can impact speed and budget.
 If you don't wish to have the refresh, could you use below script to update the file daily_plot.py and overview.php.  Please use those commands (from your BirdNET-Pi folder):
