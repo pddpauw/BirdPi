@@ -15,8 +15,8 @@ USER=$USER
 export HOME=$HOME
 export USER=$USER
 
-wget -P $HOME/BirdNET-Pi/scripts https://github.com/pddpauw/BirdPi/blob/222576a3c9608ee414b4ab9e1504a57fe1fd11fb/scripts/LB_daily_plot.py
-wget -P $HOME/BirdNET-Pi/scripts https://github.com/pddpauw/BirdPi/blob/7dcd54e6624c9f5394d940dd893ad46255d72b64/scripts/LB_overview.php
+wget -P $HOME/BirdNET-Pi/scripts https://github.com/pddpauw/BirdPi/raw/222576a3c9608ee414b4ab9e1504a57fe1fd11fb/scripts/LB_daily_plot.py
+wget -P $HOME/BirdNET-Pi/scripts https://github.com/pddpauw/BirdPi/raw/7dcd54e6624c9f5394d940dd893ad46255d72b64/scripts/LB_overview.php
 
 mv $HOME/BirdNET-Pi/scripts/daily_plot.py $HOME/BirdNET-Pi/scripts/daily_plot_OLD.py 
 mv $HOME/BirdNET-Pi/scripts/daily_plot.py $HOME/BirdNET-Pi/scripts/daily_plot_OLD.py 
