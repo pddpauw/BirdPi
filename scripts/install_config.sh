@@ -43,8 +43,8 @@ LONGITUDE=$LONGITUDE
 #______________________used for detecting bird audio.__________________________#
 #_It's recommended that you only change these values through the web interface.#
 
-MODEL=BirdNET_6K_GLOBAL_MODEL
-SF_THRESH=0.03
+MODEL=BirdNET_GLOBAL_6K_V2.4_Model_FP16
+SF_THRESH=0.0006
 
 #---------------------  BirdWeather Station Information -----------------------#
 #_____________The variable below can be set to have your BirdNET-Pi____________#
