@@ -36,7 +36,7 @@ following changes have been implemented on the original repository from mcguirep
 the php pages send updates (e.g. spectrogram, overview table) which consumes a considerable amount of data.  For mobile connections, this can impact speed and budget.
 If you don't wish to have the refresh, could you use below script to update the file daily_plot.py and overview.php.  Please use those commands (from your BirdNET-Pi folder):
 ```
-wget https://github.com/pddpauw/BirdPi/raw/d3f689512033ac152c39e52635e93e2db9af77ed/replace_lower_bandwith.sh
+wget https://github.com/pddpauw/BirdPi/raw/c09419538b3fd342642e84ef6907e950ed815fba/replace_lower_bandwith.sh
 bash replace_lower_bandwith.sh
 ```
 # Use the V2.4 Model V2
