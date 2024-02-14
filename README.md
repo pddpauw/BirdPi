@@ -34,9 +34,9 @@ following changes have been implemented on the original repository from mcguirep
 9) optimize for 4G environment (limit data usage): no automatic refresh of tables (in overview.php), not showing spectrogram (they get created, but not shown in the homepage)
 10) use V2.4 Model V2
 
-# Optimize for environment to limit data transfert
+# Optimize for environment to limit data transfer
 the php pages send updates (e.g. spectrogram, overview table) which consumes a considerable amount of data.  For mobile connections, this can impact speed and budget.
-If you don't wish to have the refresh, could you use below script to update the file daily_plot.py and overview.php.  Please use those commands (from your BirdNET-Pi foler):
+If you don't wish to have the refresh, could you use below script to update the file daily_plot.py and overview.php.  Please use those commands (from your BirdNET-Pi folder):
 ```
 wget https://github.com/pddpauw/BirdPi/raw/d3f689512033ac152c39e52635e93e2db9af77ed/replace_lower_bandwith.sh
 bash replace_lower_bandwith.sh
