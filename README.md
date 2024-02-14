@@ -44,6 +44,7 @@ the script is running the V2.4 as standard version, but a new model is released 
 The below script will replace the existing V2.4 model with the new model:
 ```
 wget https://github.com/pddpauw/BirdPi/raw/cc7d85a941733cf81cea9ef20f5849f47ad18f91/install_model_V2_4V2.sh
+bash install_model_V2_4V2.sh
 ```
 # Changing IP address in Bookworm
 network settings in Bookworm are managed via nmcli
