@@ -31,7 +31,7 @@ following changes have been implemented on the original repository from mcguirep
 6) refresh the database in the script plotly_streamlit.py (st.cache_resource.clear())
 7) disable the terminal from the webpage _Importantly, if you wish to enable this, then feel free to adapt in views.php in your homepage/ folder (after installation), and uncomment line 264, and comment line 265_
 8) change table in homepage to 50 species (change # readings in daily_plot.py (line 46)) AND optimize layout for the table
-9) optimize for 4G environment (limit data usage): no automatic refresh of tables (in overview.php), not showing spectrogram (they get created, but not shown in the homepage)
+
 10) use V2.4 Model V2
 
 # Optimize for environment to limit data transfer
@@ -41,7 +41,13 @@ If you don't wish to have the refresh, could you use below script to update the 
 wget https://github.com/pddpauw/BirdPi/raw/d3f689512033ac152c39e52635e93e2db9af77ed/replace_lower_bandwith.sh
 bash replace_lower_bandwith.sh
 ```
-
+# Use the V2.4 Model V2
+the script is running the V2.4 as standard version, but a new model is released (info can be found here: https://github.com/kahst/BirdNET-Analyzer/discussions/234)
+The below script will replace the existing V2.4 model with the new model:
+```
+wget https://github.com/pddpauw/BirdPi/raw/d3f689512033ac152c39e52635e93e2db9af77ed/install_model_V2_4V2.sh
+bash install_model_V2_4V2.sh
+```
 # Changing IP address in Bookworm
 network settings in Bookworm are managed via nmcli
 ```
