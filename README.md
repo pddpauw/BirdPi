@@ -36,15 +36,13 @@ following changes have been implemented on the original repository from mcguirep
 the php pages send updates (e.g. spectrogram, overview table) which consumes a considerable amount of data.  For mobile connections, this can impact speed and budget.
 If you don't wish to have the refresh, could you use below script to update the file daily_plot.py and overview.php.  Please use those commands (from your BirdNET-Pi folder):
 ```
-wget https://github.com/pddpauw/BirdPi/raw/c09419538b3fd342642e84ef6907e950ed815fba/replace_lower_bandwith.sh
-bash replace_lower_bandwith.sh
+curl -s https://raw.githubusercontent.com/pddpauw/BirdPi/main/replace_lower_bandwith.sh| bash
 ```
 # Use the V2.4 Model V2
 the script is running the V2.4 as standard version, but a new model is released (info can be found here: https://github.com/kahst/BirdNET-Analyzer/discussions/234)
 The below script will replace the existing V2.4 model with the new model:
 ```
-wget https://github.com/pddpauw/BirdPi/raw/cc7d85a941733cf81cea9ef20f5849f47ad18f91/install_model_V2_4V2.sh
-bash install_model_V2_4V2.sh
+curl -s https://raw.githubusercontent.com/pddpauw/BirdPi/main/install_model_V2_4V2.sh| bash
 ```
 # Changing IP address in Bookworm
 network settings in Bookworm are managed via nmcli
