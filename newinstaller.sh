@@ -6,13 +6,20 @@ if [ "$EUID" == 0 ]
   exit
 fi
 
-if [ "$(uname -m)" != "aarch64" ];then
+if [ "$(uname -m)" != "aarch64" ] && [ "$(uname -m)" != "x86_64" ];then
   echo "BirdNET-Pi requires a 64-bit OS.
 It looks like your operating system is using $(uname -m),
 but would need to be aarch64.
 Please take a look at https://birdnetwiki.pmcgui.xyz for more
 information"
   exit 1
+fi
+
+# the php code expects the user with uid 1000 on this system
+PRIMARY=$(awk -F: '/1000/{print $1}' /etc/passwd)
+if [ $USER != $PRIMARY ]; then
+  echo "Current user \"$USER\" does not match the user with uid 1000 on this system \"$PRIMARY\". Aborting"
+  exit
 fi
 
 # Simple new installer
